@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+extern char* strdup(const char*);
+
 int read_string(char* buf, int buf_size) {
 	int i;
 	for(i = 0; i < buf_size - 1; i++) {

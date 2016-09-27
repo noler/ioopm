@@ -1,6 +1,7 @@
 #include "tree.h"
 
 #include <stdio.h> // DEBUG
+#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -57,6 +58,23 @@ tree_t* tree_new() {
 	tree_t* tree = malloc(sizeof(tree_t));
 	tree->nodes = 0;
 	return tree;
+}
+
+void _tree_destroy(node_t* node) {
+	if(node == 0) {
+		return;
+	}
+
+	_tree_destroy(node->left);
+	_tree_destroy(node->right);
+
+	free(node);
+}
+
+void tree_destroy(tree_t* tree) {
+	_tree_destroy(tree->nodes);
+
+	free(tree);
 }
 
 int _tree_size(node_t* node) {
@@ -270,4 +288,12 @@ void* tree_search(tree_t* tree, void* key, comp_func comp) {
 
 int tree_comp_int(void* a, void* b) {
 	return *((int*) b) - *((int*) a);
+}
+
+int tree_comp_str(void* a, void* b) {
+	return strcmp((char*) a, (char*) b);
+}
+
+int tree_comp_strp(void* a, void* b) {
+	return strcmp(*(char**) a, *(char**) b);
 }

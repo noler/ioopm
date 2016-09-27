@@ -13,28 +13,9 @@ extern void debug_print_tree(tree_t*);
 void print_menu();
 char get_menu_selection();
 
-int* allocint(int value) {
-	int* result = malloc(sizeof(int));
-	*result = value;
-	return result;
-}
-
 int main(int argc, char* argv[]) {
-	list_h* list = list_new();
-
-	list_append(allocint(1));
-	list_append(allocint(2));
-	list_append(allocint(3));
-
-	list_remove(list, 0, 0);
-	list_remove(list, 1, 0);
-
-	list_destroy(list);
-
-	mtrace();
-
-	/*puts(
-		"Välkommen till lagerhantering 1.0\n"
+	puts(
+		"VÃ¤lkommen till lagerhantering 1.0\n"
 		"=================================\n");
 
 	db_t* db = db_new();
@@ -59,7 +40,14 @@ int main(int argc, char* argv[]) {
 
 			case 'R':
 			{
-				// TODO
+				db_list(db);
+				printf("Vilken vara ska Ã¤ndras? (1-%d)\n", db_num_items(db));
+				// TODO input id
+				int index = 0;
+				item_t* old_item = db_get_item(db, index);
+				item_t* new_item = db_item_input();
+				db_item_copy(new_item, old_item);
+				db_item_destroy(new_item);
 			}
 			break;
 
@@ -77,15 +65,15 @@ int main(int argc, char* argv[]) {
 				loop = false;
 				break;
 		}
-	}*/
+	}
 }
 
 void print_menu() {
 	puts(
-		"[L]ägga till en vara\n"
+		"[L]Ã¤gga till en vara\n"
 		"[T]a bort en vara\n"
 		"[R]edigera en vara\n"
-		"Ån[g]ra senaste ändringen\n"
+		"Ã…n[g]ra senaste Ã¤ndringen\n"
 		"List [h]ela varukatalogen\n"
 		"[A]vsluta\n");
 }
@@ -93,7 +81,7 @@ void print_menu() {
 char get_menu_selection() {
 	char c;
 	do {
-		fputs("Vad vill du göra? ", stdout);
+		fputs("Vad vill du gÃ¶ra? ", stdout);
 		fflush(stdout);
 		c = toupper(getchar());
 		if(c == EOF) {
