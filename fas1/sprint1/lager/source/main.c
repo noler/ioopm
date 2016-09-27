@@ -10,11 +10,33 @@
 
 extern void debug_print_tree(tree_t*);
 
+int* allocint(int i) {
+	int* pi = malloc(sizeof(int));
+	*pi = i;
+	return pi;
+}
+
 void print_menu();
 char get_menu_selection();
 
 int main(int argc, char* argv[]) {
-	puts(
+	tree_t* tree = tree_new();
+
+	tree_insert(tree, allocint(4), allocint(4), tree_comp_int);
+	debug_print_tree(tree);
+	tree_insert(tree, allocint(2), allocint(2), tree_comp_int);
+	debug_print_tree(tree);
+	tree_insert(tree, allocint(1), allocint(1), tree_comp_int);
+	debug_print_tree(tree);
+	tree_insert(tree, allocint(3), allocint(3), tree_comp_int);
+
+	debug_print_tree(tree);
+
+	tree_remove(tree, allocint(1), tree_comp_int);
+
+	debug_print_tree(tree);
+
+	/*puts(
 		"Välkommen till lagerhantering 1.0\n"
 		"=================================\n");
 
@@ -65,7 +87,7 @@ int main(int argc, char* argv[]) {
 				loop = false;
 				break;
 		}
-	}
+		}*/
 }
 
 void print_menu() {
