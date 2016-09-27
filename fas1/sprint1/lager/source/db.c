@@ -102,7 +102,7 @@ item_t* db_find_item(db_t* db, char* name) {
 item_t* db_item_new(char* name, char* desc, int price, char* shelf) {
 	// TODO check inputs
 
-	item_t* item = (item_t*) malloc(sizeof(sizeof(item_t)));
+	item_t* item = (item_t*) malloc(sizeof(item_t));
 
 	item->name = strdup(name);
 	item->desc = strdup(desc);
@@ -119,6 +119,10 @@ item_t* db_item_input() {
 	char* shelf = ask_question("Shelf: ", check_shelf, (convert_func) strdup).s;
 
 	item_t* item = db_item_new(name, desc, price, shelf);
+
+	free(name);
+	free(desc);
+	free(shelf);
 
 	return item;
 }

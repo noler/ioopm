@@ -3,7 +3,7 @@ GCC =
 SOURCE = source/
 BUILD  = build/
 
-TARGET = $(BUILD)db.exe
+TARGET = $(BUILD)db
 OBJECTS += $(patsubst $(SOURCE)%.c, $(BUILD)%.o, $(wildcard $(SOURCE)*.c))
 
 all: $(TARGET)

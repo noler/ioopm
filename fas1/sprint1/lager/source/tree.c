@@ -101,7 +101,7 @@ int tree_depth(tree_t* tree) {
 	return _tree_depth(tree->nodes);
 }
 
-void _tree_balance(node_t** node_ptr) {
+void _tree_balance_red(node_t** node_ptr) {
 	node_t* node = *node_ptr;
 
 	if(!node->red) {
@@ -185,11 +185,11 @@ node_t* _tree_insert(node_t* node, void* key, void* value, comp_func comp) {
 		}
 		if(side < 0) {
 			node->left = _tree_insert(node->left, key, value, comp);
-			_tree_balance(&node);
+			_tree_balance_red(&node);
 			return node;
 		} else if(side > 0) {
 			node->right = _tree_insert(node->right, key, value, comp);
-			_tree_balance(&node);
+			_tree_balance_red(&node);
 			return node;
 		}
 	}
@@ -201,71 +201,133 @@ void tree_insert(tree_t* tree, void* key, void* value, comp_func comp) {
 	tree->nodes->red = false;
 }
 
-void* _tree_remove(node_t** node) {
-	if((*node)->left == 0 && (*node)->right == 0) {
-		void* value = (*node)->value;
-		free(node);
-		*node = 0;
-		return value;
+node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, void** value) {
+	if(node == 0) {
+		*value = 0;
+		return 0;
 	}
 
-	if((*node)->left == 0) { // XXX search right
-		node_t** replacement = &(*node)->right;
+	int side = comp(node->key, key);
 
-		while((*replacement)->left != 0) {
-			replacement = &(*replacement)->left;
+	if(side == 0) {
+		*value = node->value;
+		if(node->left == 0 && node->right == 0) {
+			*balance = !node->red;
+			free(node);
+			return 0;
+		} else if(node->left != 0 && node->right != 0) {
+			// TODO
+		} else if(node->left != 0) {
+			node->key = node->left->key;
+			node->value = node->left->value;
+			node->red = false;
+			free(node->left);
+			node->left = 0;
+		} else { // node->right != 0
+			node->key = node->right->key;
+			node->value = node->right->value;
+			node->red = false;
+			free(node->right);
+			node->right = 0;
 		}
 
-		void* value = (*node)->value;
-		(*node)->key = (*replacement)->key;
-		(*node)->value = (*replacement)->value;
+		return node;
+	} else {
+		balance = false;
 
-		if((*replacement)->right == 0) {
-			free(*replacement);
-			*replacement = 0;
+		if(side < 0) {
+			node->left = _tree_remove(node->left, key, comp, balance, value);
+
+			if(balance) {
+				if(!node->right->red) {
+					if(node->right->right != 0 && node->right->right->red) {
+						node_t* new_node = node->right;
+						node_t* new_lr = new_node->left;
+						new_node->left = node;
+						new_node->left->right = new_lr;
+						new_node->right->red = false;
+						*balance = false;
+						return new_node;
+					} else if(node->right->left != 0 && node->right->left->red) {
+						node_t* new_node = node->right->left;
+						node_t* new_lr = new_node->left;
+						node_t* new_rl = new_node->right;
+						new_node->left = node;
+						new_node->right = node->right;
+						new_node->left->right = new_lr;
+						new_node->right->left = new_rl;
+						new_node->red = false;
+						*balance = false;
+						return new_node;
+					} else {
+						node->right->red = true;
+						return node;
+					}
+				} else {
+					node_t* new_node = node->right;
+					node_t* new_lr = new_node->left;
+					new_node->left = node;
+					new_node->left->right = new_lr;
+					new_node->red = false;
+					new_node->left->red = true;
+					*balance = false;
+					return new_node;
+				}
+			}
 		} else {
-			_tree_remove(replacement);
+			node->right = _tree_remove(node->right, key, comp, balance, value);
+
+			if(balance) {
+				if(!node->left->red) {
+					if(node->left->left != 0 && node->left->left->red) {
+						node_t* new_node = node->left;
+						node_t* new_lr = new_node->right;
+						new_node->right = node;
+						new_node->right->left = new_lr;
+						new_node->left->red = false;
+						*balance = false;
+						return new_node;
+					} else if(node->left->right != 0 && node->left->right->red) {
+						node_t* new_node = node->left->right;
+						node_t* new_lr = new_node->right;
+						node_t* new_rl = new_node->left;
+						new_node->right = node;
+						new_node->left = node->left;
+						new_node->right->left = new_lr;
+						new_node->left->right = new_rl;
+						new_node->red = false;
+						*balance = false;
+						return new_node;
+					} else {
+						node->left->red = true;
+						return node;
+					}
+				} else {
+					node_t* new_node = node->left;
+					node_t* new_lr = new_node->right;
+					new_node->right = node;
+					new_node->right->left = new_lr;
+					new_node->red = false;
+					new_node->right->red = true;
+					*balance = false;
+					return new_node;
+				}
+			}
 		}
 
-		return value;
-	} else { // XXX search left
-		node_t** replacement = &(*node)->left;
-
-		while((*replacement)->right != 0) {
-			replacement = &(*replacement)->right;
-		}
-
-		void* value = (*node)->value;
-		(*node)->key = (*replacement)->key;
-		(*node)->value = (*replacement)->value;
-
-		if((*replacement)->left == 0) {
-			free(*replacement);
-			*replacement = 0;
-		} else {
-			_tree_remove(replacement);
-		}
-
-		return value;
+		return node;
 	}
+
+	return node;
 }
 
 void* tree_remove(tree_t* tree, void* key, comp_func comp) {
-	node_t** node = &tree->nodes;
+	bool balance;
+	void* value;
 
-	for(int side; *node != 0 && (side = comp((*node)->key, key)) != 0; ) {
-		if(side < 0) {
-			node = &(*node)->left;
-		} else { // side > 0
-			node = &(*node)->right;
-		}
-	}
+	tree->nodes = _tree_remove(tree->nodes, key, comp, &balance, &value);
 
-	if(*node == 0) {
-		return 0;
-	} else {
-		return _tree_remove(node);
-	}
+	return value;
 }
 
 void* _tree_search(node_t* node, void* key, comp_func comp) {
