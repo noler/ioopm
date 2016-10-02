@@ -95,7 +95,9 @@ answer_t ask_question(char* question, check_func check, convert_func convert) {
 	char buffer[512];
 
 	do {
-		puts(question);
+		if(question != 0) {
+			puts(question);
+		}
 		read_string(buffer, 512);
 	} while(!check(buffer));
 

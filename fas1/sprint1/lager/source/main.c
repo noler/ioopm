@@ -10,37 +10,18 @@
 
 extern void debug_print_tree(tree_t*);
 
-int* allocint(int i) {
-	int* pi = malloc(sizeof(int));
-	*pi = i;
-	return pi;
-}
+list_t* undo_history;
 
 void print_menu();
 char get_menu_selection();
 
 int main(int argc, char* argv[]) {
-	tree_t* tree = tree_new();
-
-	tree_insert(tree, allocint(4), allocint(4), tree_comp_int);
-	debug_print_tree(tree);
-	tree_insert(tree, allocint(2), allocint(2), tree_comp_int);
-	debug_print_tree(tree);
-	tree_insert(tree, allocint(1), allocint(1), tree_comp_int);
-	debug_print_tree(tree);
-	tree_insert(tree, allocint(3), allocint(3), tree_comp_int);
-
-	debug_print_tree(tree);
-
-	tree_remove(tree, allocint(1), tree_comp_int);
-
-	debug_print_tree(tree);
-
-	/*puts(
+	puts(
 		"Välkommen till lagerhantering 1.0\n"
 		"=================================\n");
 
 	db_t* db = db_new();
+	undo_history = list_new();
 
 	bool loop = true;
 	while(loop) {
@@ -51,25 +32,38 @@ int main(int argc, char* argv[]) {
 			case 'L': {
 				item_t* item = db_item_input();
 				db_add_item(db, item);
+				printf("\n");
 			}
 			break;
 
 			case 'T':
 			{
-				// TODO
+				db_list(db);
+				int index, limit = db_num_items(db);
+				do {
+					printf("Vilken vara ska tas bort (1-%d)\n", limit);
+					index = ask_question_int(0);
+				} while(!(0 < index && index <= limit));
+				index--;
+				db_item_destroy(db_remove_item(db, index));
+				printf("\n");
 			}
 			break;
 
 			case 'R':
 			{
 				db_list(db);
-				printf("Vilken vara ska ändras? (1-%d)\n", db_num_items(db));
-				// TODO input id
-				int index = 0;
+				int index, limit = db_num_items(db);
+				do {
+					printf("Vilken vara ska ändras? (1-%d)\n", db_num_items(db));
+					index = ask_question_int(0);
+				} while(!(0 < index && index <= limit));
+				index--;
 				item_t* old_item = db_get_item(db, index);
 				item_t* new_item = db_item_input();
 				db_item_copy(new_item, old_item);
 				db_item_destroy(new_item);
+				printf("\n");
 			}
 			break;
 
@@ -87,7 +81,7 @@ int main(int argc, char* argv[]) {
 				loop = false;
 				break;
 		}
-		}*/
+	}
 }
 
 void print_menu() {

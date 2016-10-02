@@ -17,7 +17,7 @@ int tree_depth(tree_t* tree);
 
 void tree_insert(tree_t* tree, void* key, void* value, comp_func comp);
 
-void* tree_remove(tree_t* tree, void* key, comp_func comp); // TODO return key for deletion
+void* tree_remove(tree_t* tree, void** key, comp_func comp); // TODO return key for deletion
 
 void* tree_search(tree_t* tree, void* key, comp_func comp);
 

@@ -9,34 +9,25 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// exern char* strdup(const char*);
-
-char* strdup2(const char* str) {
-	int len;
-	for(len = 0; str[len] != 0; len++);
-	len++;
-
-	char* new_str = malloc(len);
-
-	for(int i = 0; i < len; i++) {
-		new_str[i] = str[i];
-	}
-
-	return new_str;
-}
-
-#define strdup strdup2
+extern char* strdup(const char*);
 
 struct item {
 	char* name, *desc;
 	int price;
 	char* shelf;
+	int amount;
 };
 
 struct db {
 	list_t* list;
 	tree_t* tree;
 };
+
+int db_tree_comp_name(void* a, void* b) {
+	item_t* item_a = (item_t*) a;
+	item_t* item_b = (item_t*) b;
+	return strcmp(item_a->name, item_b->name);
+}
 
 bool check_shelf(char* str) {
 	if(!('A' <= *str && *str <= 'Z') &&
@@ -86,20 +77,26 @@ item_t* db_get_item(db_t* db, int index) {
 	return (item_t*) *list_get(db->list, index);
 }
 
-item_t* db_find_item(db_t* db, char* name) {
+item_t* db_find_item_name(db_t* db, char* name) {
 	return (item_t*) tree_search(db->tree, name, tree_comp_strp);
 }
 
-/*item_t* db_remove_item(db_t* db, int index) {
+item_t* db_find_item_shelf(db_t* db, char* name) {
+	return 0; // TODO
+}
+
+item_t* db_remove_item(db_t* db, int index) {
 	if(index < 0) return 0;
 	if(index >= list_length(db->list)) return 0;
 
 	item_t* item;
 	list_remove(db->list, index, (void**) &item);
+	char** name = &item->name;
+	tree_remove(db->tree, (void**) &name, tree_comp_strp);
 	return item;
-}*/
+}
 
-item_t* db_item_new(char* name, char* desc, int price, char* shelf) {
+item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount) {
 	// TODO check inputs
 
 	item_t* item = (item_t*) malloc(sizeof(item_t));
@@ -108,6 +105,7 @@ item_t* db_item_new(char* name, char* desc, int price, char* shelf) {
 	item->desc = strdup(desc);
 	item->price = price;
 	item->shelf = strdup(shelf);
+	item->amount = amount;
 
 	return item;
 }
@@ -117,8 +115,9 @@ item_t* db_item_input() {
 	char* desc = ask_question_string("Desc: ");
 	int price = ask_question_int("Price: ");
 	char* shelf = ask_question("Shelf: ", check_shelf, (convert_func) strdup).s;
+	int amount = ask_question_int("Amount: ");
 
-	item_t* item = db_item_new(name, desc, price, shelf);
+	item_t* item = db_item_new(name, desc, price, shelf, amount);
 
 	free(name);
 	free(desc);

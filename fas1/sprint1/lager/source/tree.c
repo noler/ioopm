@@ -333,11 +333,11 @@ node_t* _tree_remove(node_t* node, void** key, comp_func comp, bool* balance, vo
 	return node;
 }
 
-void* tree_remove(tree_t* tree, void* key, comp_func comp) {
+void* tree_remove(tree_t* tree, void** key, comp_func comp) {
 	bool balance;
 	void* value;
 
-	tree->nodes = _tree_remove(tree->nodes, &key, comp, &balance, &value, false);
+	tree->nodes = _tree_remove(tree->nodes, key, comp, &balance, &value, false);
 
 	return value;
 }

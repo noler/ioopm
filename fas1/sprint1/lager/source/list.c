@@ -14,6 +14,12 @@ struct list {
 	list_elem_t* first, *last;
 };
 
+struct list_it {
+	list_t* list;
+	list_elem_t* elem;
+	int index;
+};
+
 list_t* list_new() {
 	list_t* list = malloc(sizeof(list_t));
 	list->size = 0;
@@ -28,6 +34,10 @@ void list_destroy(list_t* list) {
 		free(elem);
 	}
 	free(list);
+}
+
+int list_length(list_t* list) {
+	return list->size;
 }
 
 void list_append(list_t* list, void* elem) {
@@ -184,6 +194,66 @@ void* list_last(list_t* list) {
 	return &list->last->elem;
 }
 
-int list_length(list_t* list) {
-	return list->size;
+list_it_t* list_it_new(list_t* list) {
+	list_it_t* it = malloc(sizeof(list_it_t));
+	it->list = list;
+	it->elem = list->first;
+	it->index = it->elem == 0 ? -1 : 0;
+	return it;
+}
+
+void list_it_destroy(list_it_t* it) {
+	free(it);
+}
+
+void** list_it_current(list_it_t* it) {
+	if(it->elem == 0) {
+		return 0;
+	}
+
+	return &it->elem->elem;
+}
+
+void** list_it_next(list_it_t* it) {
+	if(it->elem == 0) {
+		return 0;
+	}
+
+	void** result = &it->elem->elem;
+	it->elem = it->elem->next;
+	it->index++;
+	if(it->index >= it->list->size) {
+		it->index -= it->list->size;
+	}
+	return result;
+}
+
+void** list_it_prev(list_it_t* it) {
+	if(it->elem == 0) {
+		return 0;
+	}
+
+	void** result = &it->elem->elem;
+	it->elem = it->elem->prev;
+	it->index--;
+	if(it->index < 0) {
+		it->index = it->list->size - it->index;
+	}
+	return result;
+}
+
+void list_it_seek(list_it_t* it, int index) {
+	if(it->list->first == 0) {
+		it->elem = 0;
+		it->index = -1;
+	} else {
+		it->elem = it->list->first;
+		for(it->index = 0; it->index < index; it->index++) {
+			it->elem = it->elem->next;
+		}
+	}
+}
+
+int list_it_index(list_it_t* it) {
+	return it->index;
 }
