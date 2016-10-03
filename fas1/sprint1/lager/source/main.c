@@ -23,7 +23,22 @@ char get_menu_selection();
 void store_db(db_t* db);
 db_t* load_db();
 
-int main(int argc, char* argv[]) {
+int main() {
+	int a = 1, b = 2, c = 3;
+
+	tree_t* tree = tree_new();
+	tree_insert(tree, &b, 0, tree_comp_int);
+	tree_insert(tree, &a, 0, tree_comp_int);
+	tree_insert(tree, &c, 0, tree_comp_int);
+	debug_print_tree(tree);
+	int* _b = &b;
+	tree_remove(tree, (void**) &_b, tree_comp_int);
+	debug_print_tree(tree);
+
+	return 0;
+}
+
+int main2(int argc, char* argv[]) {
 	FILE* file;
 
 	puts(
@@ -93,7 +108,6 @@ int main(int argc, char* argv[]) {
 					index = 0;
 				} else {
 					db_list(db);
-					int index;
 					do {
 						printf("Vilken vara ska tas bort (1-%d)\n", limit);
 						index = ask_question_int(0);
@@ -109,11 +123,14 @@ int main(int argc, char* argv[]) {
 					char* response = ask_question_string(0);
 					if((response[0] == 'J' || response[0] == 'j') && response[1] == 0) {
 						confirm = true;
+						free(response);
 						break;
 					} else if((response[0] == 'N' || response[0] == 'n') && response[1] == 0) {
 						confirm = false;
+						free(response);
 						break;
 					}
+					free(response);
 				}
 
 				if(!confirm) {
@@ -275,6 +292,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	db_destroy(db);
+
+	return 0;
 }
 
 void print_menu() {
