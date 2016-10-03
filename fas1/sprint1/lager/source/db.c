@@ -29,7 +29,7 @@ int db_tree_comp_name(void* a, void* b) {
 	return strcmp(item_a->name, item_b->name);
 }
 
-bool check_shelf(char* str) {
+bool db_check_shelf(char* str) {
 	if(!('A' <= *str && *str <= 'Z') &&
 	   !('a' <= *str && *str <= 'z'))
 		return false;
@@ -161,7 +161,7 @@ item_t* db_get_item(db_t* db, int index) {
 }
 
 item_t* db_find_item_name(db_t* db, char* name) {
-	return (item_t*) tree_search(db->tree, name, tree_comp_strp);
+	return (item_t*) tree_search(db->tree, &name, tree_comp_strp);
 }
 
 item_t* db_find_item_shelf(db_t* db, char* name) {
@@ -209,11 +209,11 @@ item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount) 
 }
 
 item_t* db_item_input() {
-	char* name = ask_question_string("Name: ");
-	char* desc = ask_question_string("Desc: ");
-	int price = ask_question_int("Price: ");
-	char* shelf = ask_question("Shelf: ", check_shelf, (convert_func) strdup).s;
-	int amount = ask_question_int("Amount: ");
+	char* name = ask_question_string("Namn: ");
+	char* desc = ask_question_string("Beskrivning: ");
+	int price = ask_question_int("Pris: ");
+	char* shelf = ask_question("Hylla: ", db_check_shelf, (convert_func) strdup).s;
+	int amount = ask_question_int("Antal: ");
 
 	item_t* item = db_item_new(name, desc, price, shelf, amount);
 
@@ -222,6 +222,50 @@ item_t* db_item_input() {
 	free(shelf);
 
 	return item;
+}
+
+void db_item_print(item_t* item) {
+	printf(
+		"Namn: %s\n"
+		"Beskrivning: %s\n"
+		"Pris: %d\n"
+		"Hylla: %s\n"
+		"Antal: %d\n",
+		item->name,
+		item->desc,
+		item->price,
+		item->shelf,
+		item->amount);
+}
+
+char* db_item_name(item_t* item) {
+	return item->name;
+}
+
+char* db_item_desc(item_t* item) {
+	return item->desc;
+}
+
+int db_item_price(item_t* item) {
+	return item->price;
+}
+
+char* db_item_shelf(item_t* item) {
+	return item->shelf;
+}
+
+int db_item_amount(item_t* item) {
+	return item->amount;
+}
+
+void db_item_set_name(item_t* item, char* name) {
+	free(item->name);
+	item->name = strdup(name);
+}
+
+void db_item_set_shelf(item_t* item, char* shelf) {
+	free(item->shelf);
+	item->shelf = strdup(shelf);
 }
 
 void db_item_copy(item_t* from, item_t* to) {

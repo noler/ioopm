@@ -32,9 +32,22 @@ item_t* db_remove_item(db_t* db, int index);
 item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount);
 item_t* db_item_input();
 
+void db_item_print(item_t*);
+
+char* db_item_name(item_t*);
+char* db_item_desc(item_t*);
+int db_item_price(item_t*);
+char* db_item_shelf(item_t*);
+int db_item_amount(item_t*);
+
+void db_item_set_name(item_t*, char*);
+void db_item_set_shelf(item_t*, char*);
+
 void db_item_copy(item_t* from, item_t* to);
 
 void db_item_destroy(item_t* item);
+
+bool db_check_shelf(char*);
 
 // DEBUG functions
 

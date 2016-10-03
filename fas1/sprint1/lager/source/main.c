@@ -25,14 +25,20 @@ db_t* load_db();
 
 int main(int argc, char* argv[]) {
 	FILE* file;
-	
+
 	puts(
 		"Välkommen till lagerhantering 1.0\n"
 		"=================================\n");
 
+	db_t* db;
+
 	file = fopen("store.db", "rb");
-	db_t* db = db_read(file);
-	fclose(file);
+	if(file != NULL) {
+		db = db_read(file);
+		fclose(file);
+	} else {
+		db = db_new();
+	}
 	list_t* undo_history = list_new();
 
 	bool loop = true;
@@ -44,6 +50,28 @@ int main(int argc, char* argv[]) {
 			case 'L': {
 				item_t* item = db_item_input();
 
+				item_t* existing_item;
+				while((existing_item = db_find_item_shelf(db, db_item_shelf(item))) != 0) {
+					printf("Varan \"%s\" finns redan på samma hyllplats, välj en ny plats: \n", db_item_name(existing_item));
+					do {
+						char* response = ask_question_string(0);
+						if(!db_check_shelf(response)) {
+							free(response);
+							puts("Ange en giltig hyllplats (bokstav följt av siffror): ");
+							continue;
+						}
+						db_item_set_shelf(item, response);
+						free(response);
+						break;
+					} while(1);
+				}
+
+				while(db_find_item_name(db, db_item_name(item)) != 0) {
+					char* response = ask_question_string("Det finns redan en vara med samma namn, välj ett nytt namn: ");
+					db_item_set_name(item, response);
+					free(response);
+				}
+
 				struct undo_item* undo = malloc(sizeof(struct undo_item));
 				undo->type = undo_added;
 				undo->index = db_num_items(db);
@@ -51,19 +79,47 @@ int main(int argc, char* argv[]) {
 				list_append(undo_history, undo);
 
 				db_add_item(db, item);
-				puts("");
+				printf("%s har lagts till\n\n", db_item_name(item));
 			}
 			break;
 
 			case 'T':
 			{
-				db_list(db);
 				int index, limit = db_num_items(db);
-				do {
-					printf("Vilken vara ska tas bort (1-%d)\n", limit);
-					index = ask_question_int(0);
-				} while(!(0 < index && index <= limit));
-				index--;
+				if(limit == 0) {
+					puts("Varukatalogen är tom. \n");
+					break;
+				} else if(limit == 1) {
+					index = 0;
+				} else {
+					db_list(db);
+					int index;
+					do {
+						printf("Vilken vara ska tas bort (1-%d)\n", limit);
+						index = ask_question_int(0);
+					} while(!(0 < index && index <= limit));
+					index--;
+				}
+
+				item_t* item = db_get_item(db, index);
+
+				bool confirm;
+				while(1) {
+					printf("Är du säker på att du vill ta bort \"%s\"? (j/N)\n", db_item_name(item));
+					char* response = ask_question_string(0);
+					if((response[0] == 'J' || response[0] == 'j') && response[1] == 0) {
+						confirm = true;
+						break;
+					} else if((response[0] == 'N' || response[0] == 'n') && response[1] == 0) {
+						confirm = false;
+						break;
+					}
+				}
+
+				if(!confirm) {
+					puts("");
+					break;
+				}
 
 				struct undo_item* undo = malloc(sizeof(struct undo_item));
 				undo->type = undo_removed;
@@ -71,20 +127,47 @@ int main(int argc, char* argv[]) {
 				undo->item = db_remove_item(db, index);
 				list_append(undo_history, undo);
 
-				puts("");
+				printf("\"%s\" har tagits bort. \n\n", db_item_name(undo->item));
 			}
 			break;
 
 			case 'R':
 			{
-				db_list(db);
 				int index, limit = db_num_items(db);
-				do {
-					printf("Vilken vara ska ändras? (1-%d)\n", db_num_items(db));
-					index = ask_question_int(0);
-				} while(!(0 < index && index <= limit));
-				index--;
+				if(limit == 0) {
+					puts("Varukatalogen är tom. \n");
+					break;
+				} else {
+					db_list(db);
+					do {
+						printf("Vilken vara ska ändras? (1-%d)\n", db_num_items(db));
+						index = ask_question_int(0);
+					} while(!(0 < index && index <= limit));
+					index--;
+				}
 				item_t* new_item = db_item_input();
+
+				item_t* old_item = db_get_item(db, index);
+
+				bool confirm;
+				while(1) {
+					printf("Är du säker på att du vill ersätta \"%s\" med \"%s\"? (j/N)\n", db_item_name(new_item), db_item_name(old_item));
+					char* response = ask_question_string(0);
+					if((response[0] == 'J' || response[0] == 'j') && response[1] == 0) {
+						confirm = true;
+						break;
+					} else if((response[0] == 'N' || response[0] == 'n') && response[1] == 0) {
+						confirm = false;
+						break;
+					}
+				}
+
+				if(!confirm) {
+					puts("");
+					break;
+				}
+
+				// TODO confirm choice
 
 				struct undo_item* undo = malloc(sizeof(struct undo_item));
 				undo->type = undo_edited;
@@ -92,7 +175,7 @@ int main(int argc, char* argv[]) {
 				undo->item = db_replace_item(db, new_item, index);
 				list_append(undo_history, undo);
 
-				puts("");
+				printf("\"%s\" har ersatts med \"%s\"\n\n", db_item_name(old_item), db_item_name(new_item));
 			}
 			break;
 
@@ -131,9 +214,34 @@ int main(int argc, char* argv[]) {
 			}
 			break;
 
-			case 'H':
+			case 'H': {
+				if(db_num_items(db) == 0) {
+					puts("Varukatalogen är tom. \n");
+				} else {
+					db_list(db);
+				}
+			}
+			break;
+
+			case 'S':
+			{
+				if(db_num_items(db) == 0) {
+					puts("Varukatalogen är tom. \n");
+					break;
+				}
 				db_list(db);
-				break;
+				int index, limit = db_num_items(db);
+				do {
+					printf("Vilken vara ska skrivas ut? (1-%d)\n", db_num_items(db));
+					index = ask_question_int(0);
+				} while(!(0 < index && index <= limit));
+				index--;
+
+				puts("");
+				db_item_print(db_get_item(db, index));
+				puts("");
+			}
+			break;
 
 			case 'A':
 				loop = false;
@@ -176,6 +284,7 @@ void print_menu() {
 		"[R]edigera en vara\n"
 		"Ån[g]ra senaste ändringen\n"
 		"List [h]ela varukatalogen\n"
+		"[S]kriv ut information om en vara\n"
 		"[A]vsluta\n");
 }
 
@@ -198,6 +307,7 @@ char get_menu_selection() {
 		c != 'R' &&
 		c != 'G' &&
 		c != 'H' &&
+		c != 'S' &&
 		c != 'A');
 
 	return c;
