@@ -22,10 +22,12 @@ void* list_last(list_t* list);
 list_it_t* list_it_new(list_t*);
 void list_it_destroy(list_it_t*);
 
+bool list_it_first(list_it_t*);
+bool list_it_last(list_it_t*);
+
 void** list_it_current(list_it_t*);
 void** list_it_next(list_it_t*);
 void** list_it_prev(list_it_t*);
-void* list_it_remove(list_it_t*);
 void list_it_seek(list_it_t*, int index);
 int list_it_index(list_it_t*);
 

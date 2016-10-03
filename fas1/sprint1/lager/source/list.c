@@ -61,11 +61,11 @@ void list_append(list_t* list, void* elem) {
 }
 
 void list_prepend(list_t* list, void* elem) {
-	list_elem_t* new_elem = malloc(sizeof(list_elem_t));
-
 	if(list->size == 0) {
 		list_append(list, elem);
 	} else {
+		list_elem_t* new_elem = malloc(sizeof(list_elem_t));
+
 		new_elem->prev = 0;
 		new_elem->elem = elem;
 		new_elem->next = list->first;
@@ -204,6 +204,14 @@ list_it_t* list_it_new(list_t* list) {
 
 void list_it_destroy(list_it_t* it) {
 	free(it);
+}
+
+bool list_it_first(list_it_t* it) {
+	return it->index == 0;
+}
+
+bool list_it_last(list_it_t* it) {
+	return it->index == it->list->size - 1;
 }
 
 void** list_it_current(list_it_t* it) {
