@@ -29,63 +29,7 @@ struct db {
 	tree_t* tree;
 };
 
-int* aint(int a) {
-	int* _a = malloc(sizeof(int));
-	*_a = a;
-	return _a;
-}
-
-int main() {
-	tree_t* tree = tree_new();
-
-	int _1 = 1, _2 = 2, _3 = 3, _4 = 4, _5 = 5, _6 = 6, _7 = 7, _8 = 8, _9 = 9;
-
-	tree_insert(tree, &_8, 0, tree_comp_int);
-	tree_insert(tree, &_7, 0, tree_comp_int);
-	tree_insert(tree, &_9, 0, tree_comp_int);
-	tree_insert(tree, &_1, 0, tree_comp_int);
-	tree_insert(tree, &_6, 0, tree_comp_int);
-	tree_insert(tree, &_5, 0, tree_comp_int);
-	tree_insert(tree, &_2, 0, tree_comp_int);
-	tree_insert(tree, &_3, 0, tree_comp_int);
-	tree_insert(tree, &_4, 0, tree_comp_int);
-	tree_debug_print(tree, 0);
-
-	tree_remove(tree, &_8, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_7, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_9, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_1, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_6, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_5, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_2, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_3, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-	tree_debug_print(tree, 0);
-	tree_remove(tree, &_4, tree_comp_int);
-	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
-
-	tree_debug_print(tree, 0);
-
-	tree_destroy(tree);
-
-	return 0;
-}
-
-int main2(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 	FILE* file;
 
 	puts(

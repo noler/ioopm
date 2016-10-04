@@ -148,7 +148,6 @@ void _tree_balance(node_t** node_ptr) {
 node_t* _tree_insert(node_t* node, void* key, void* value, comp_func comp) {
 	if(node == 0) {
 		node = malloc(sizeof(node_t));
-		printf("malloc'd for %d\n", *(int*) key);
 		node->red = true;
 		node->left = node->right = 0;
 		node->key = key;
@@ -225,7 +224,7 @@ node_t* _tree_balance_db(node_t* node, bool left, bool* balance) {
 				new_node->left->right = new_lr;
 				new_node->red = false;
 				new_node->left->red = true;
-				*balance = false;
+				new_node->left = _tree_balance_db(new_node->left, true, balance);
 				return new_node;
 			}
 		} else {
@@ -269,18 +268,12 @@ node_t* _tree_balance_db(node_t* node, bool left, bool* balance) {
 				}
 			} else {
 				node_t* new_node = node->left;
-				node_t* new_rrl = new_node->right->right;
-				new_node->right->right = node;
-				new_node->right->right->left = new_rrl;
+				node_t* new_rl = new_node->right;
+				new_node->right = node;
+				new_node->right->left = new_rl;
 				new_node->red = false;
 				new_node->right->red = true;
-				if(new_node->right->left != 0) {
-					new_node->right->left->red = false;
-				}
-				if(new_node->right->right != 0) {
-					new_node->right->right->red = false;
-				}
-				*balance = false;
+				new_node->right = _tree_balance_db(new_node->right, false, balance);
 				return new_node;
 			}
 		}
@@ -293,14 +286,11 @@ node_t* _tree_remove_inorder(node_t* node, void** key, void** value, bool* balan
 		*value = node->value;
 		if(node->left == 0) {
 			*balance = !node->red;
-			printf("free'd %d\n", *(int*) node->key);
 			free(node);
 			return 0;
 		} else {
 			node->key = node->left->key;
 			node->value = node->left->value;
-			printf("free'd %d\n", *(int*) node->left->key);
-			printf("(hint) %d %d\n", node->left->left, node->left->right);
 			free(node->left);
 			node->left = 0;
 			return node;
@@ -323,7 +313,6 @@ node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, voi
 		*value = node->value;
 		if(node->left == 0 && node->right == 0) {
 			*balance = !node->red;
-			printf("free'd %d\n", *(int*) node->key);
 			free(node);
 			return 0;
 		} else if(node->left != 0 && node->right != 0) {
@@ -333,16 +322,12 @@ node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, voi
 		} else if(node->left != 0) { // node->right == 0
 			node->key = node->left->key;
 			node->value = node->left->value;
-			printf("free'd %d\n", *(int*) node->left->key);
-			printf("(hint) %d %d\n", node->left->left, node->left->right);
 			free(node->left);
 			node->left = 0;
 			return node;
 		} else { // node->left == 0 && node->right != 0
 			node->key = node->right->key;
 			node->value = node->right->value;
-			printf("free'd %d\n", *(int*) node->right->key);
-			printf("(hint) %d %d\n", node->right->left, node->right->right);
 			free(node->right);
 			node->right = 0;
 			return node;

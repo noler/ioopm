@@ -193,8 +193,6 @@ item_t* db_remove_item(db_t* db, int index) {
 }
 
 item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount) {
-	// TODO check inputs
-
 	item_t* item = (item_t*) malloc(sizeof(item_t));
 
 	item->name = strdup(name);
@@ -202,8 +200,6 @@ item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount) 
 	item->price = price;
 	item->shelf = strdup(shelf);
 	item->amount = amount;
-
-	printf("created item %s\n", item->name);
 
 	return item;
 }
@@ -220,15 +216,13 @@ item_t* db_item_input() {
 	item_t* item = db_item_new(name, desc, price, shelf, amount);
 
 	free(name);
-	free(desc);calgrin
+	free(desc);
 	free(shelf);
 
 	return item;
 }
 
 void db_item_destroy(item_t* item) {
-	printf("destroy item %s\n", item->name);
-
 	free(item->name);
 	free(item->desc);
 	free(item->shelf);
