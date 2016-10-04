@@ -21,38 +21,8 @@ struct tree {
 	node_t* nodes;
 };
 
-void _debug_print_tree(node_t* node, int level, int* indent) {
-	if(node == 0) {
-		if(level == 0) {
-			for(; *indent > 0; (*indent)--) {
-				printf(" ");
-			}
-			printf(" -- ");
-		} else {
-			*indent += 4;
-		}
-	} else {
-		_debug_print_tree(node->left, level - 1, indent);
-		if(level == 0) {
-			for(; *indent > 0; (*indent)--) {
-				printf(" ");
-			}
-			printf(" %d%c ", *((int*) node->key), node->red ? 'R' : 'B');
-		} else {
-			*indent += 4;
-		}
-		_debug_print_tree(node->right, level - 1, indent);
-	}
-}
-
-void debug_print_tree(tree_t* tree) {
-	int depth = tree_depth(tree);
-	for(int i = 0; i <= depth; i++) {
-		int indent = 0;
-		_debug_print_tree(tree->nodes, i, &indent);
-		printf("\n");
-	}
-}
+void tree_debug_print(tree_t*, int);
+bool tree_debug_rb_validate(tree_t*);
 
 tree_t* tree_new() {
 	tree_t* tree = malloc(sizeof(tree_t));
@@ -129,9 +99,11 @@ void _tree_balance(node_t** node_ptr) {
 			} else {
 				node_t* new_node = node->left->right;
 				node_t* new_lr = new_node->left;
+				node_t* new_rl = new_node->right;
 				new_node->left = node->left;
 				new_node->left->right = new_lr;
 				new_node->right = node;
+				new_node->right->left = new_rl;
 				new_node->red = false;
 				new_node->right->red = true;
 				*node_ptr = new_node;
@@ -160,9 +132,11 @@ void _tree_balance(node_t** node_ptr) {
 			} else {
 				node_t* new_node = node->right->left;
 				node_t* new_rl = new_node->right;
+				node_t* new_lr = new_node->left;
 				new_node->right = node->right;
 				new_node->right->left = new_rl;
 				new_node->left = node;
+				new_node->left->right = new_lr;
 				new_node->red = false;
 				new_node->left->red = true;
 				*node_ptr = new_node;
@@ -174,6 +148,7 @@ void _tree_balance(node_t** node_ptr) {
 node_t* _tree_insert(node_t* node, void* key, void* value, comp_func comp) {
 	if(node == 0) {
 		node = malloc(sizeof(node_t));
+		printf("malloc'd for %d\n", *(int*) key);
 		node->red = true;
 		node->left = node->right = 0;
 		node->key = key;
@@ -200,6 +175,143 @@ void tree_insert(tree_t* tree, void* key, void* value, comp_func comp) {
 	tree->nodes->red = false;
 }
 
+node_t* _tree_balance_db(node_t* node, bool left, bool* balance) {
+	if(!*balance) {
+		return node;
+	} else {
+		if(left) {
+			if(node->right == 0) {
+				node->red = false;
+				*balance = false;
+				return node;
+			} else if(!node->right->red) {
+				if(node->right->right != 0 && node->right->right->red) {
+					node_t* new_node = node->right;
+					node_t* new_lr = new_node->left;
+					new_node->left = node;
+					new_node->left->right = new_lr;
+					if(node->red) {
+						new_node->red = true;
+						new_node->left->red = false;
+						new_node->right->red = false;
+					} else {
+						new_node->left->red = true;
+					}
+					*balance = false;
+					return new_node;
+				} else if(node->right->left != 0 && node->right->left->red) {
+					node_t* new_node = node->right->left;
+					node_t* new_lr = new_node->left;
+					node_t* new_rl = new_node->right;
+					new_node->left = node;
+					new_node->right = node->right;
+					new_node->left->right = new_lr;
+					new_node->right->left = new_rl;
+					new_node->red = false;
+					*balance = false;
+					return new_node;
+				} else {
+					node->right->red = true;
+					if(node->red) {
+						node->red = false;
+						*balance = false;
+					}
+					return node;
+				}
+			} else {
+				node_t* new_node = node->right;
+				node_t* new_lr = new_node->left;
+				new_node->left = node;
+				new_node->left->right = new_lr;
+				new_node->red = false;
+				new_node->left->red = true;
+				*balance = false;
+				return new_node;
+			}
+		} else {
+			if(node->left == 0) {
+				node->red = false;
+				*balance = false;
+				return node;
+			} else if(!node->left->red) {
+				if(node->left->left != 0 && node->left->left->red) {
+					node_t* new_node = node->left;
+					node_t* new_lr = new_node->right;
+					new_node->right = node;
+					new_node->right->left = new_lr;
+					if(node->red) {
+						new_node->red = true;
+						new_node->right->red = false;
+						new_node->left->red = false;
+					} else {
+						new_node->right->red = true;
+					}
+					*balance = false;
+					return new_node;
+				} else if(node->left->right != 0 && node->left->right->red) {
+					node_t* new_node = node->left->right;
+					node_t* new_lr = new_node->right;
+					node_t* new_rl = new_node->left;
+					new_node->right = node;
+					new_node->left = node->left;
+					new_node->right->left = new_lr;
+					new_node->left->right = new_rl;
+					new_node->red = false;
+					*balance = false;
+					return new_node;
+				} else {
+					node->left->red = true;
+					if(node->red) {
+						node->red = false;
+						*balance = false;
+					}
+					return node;
+				}
+			} else {
+				node_t* new_node = node->left;
+				node_t* new_rrl = new_node->right->right;
+				new_node->right->right = node;
+				new_node->right->right->left = new_rrl;
+				new_node->red = false;
+				new_node->right->red = true;
+				if(new_node->right->left != 0) {
+					new_node->right->left->red = false;
+				}
+				if(new_node->right->right != 0) {
+					new_node->right->right->red = false;
+				}
+				*balance = false;
+				return new_node;
+			}
+		}
+	}
+}
+
+node_t* _tree_remove_inorder(node_t* node, void** key, void** value, bool* balance) {
+	if(node->right == 0) {
+		*key = node->key;
+		*value = node->value;
+		if(node->left == 0) {
+			*balance = !node->red;
+			printf("free'd %d\n", *(int*) node->key);
+			free(node);
+			return 0;
+		} else {
+			node->key = node->left->key;
+			node->value = node->left->value;
+			printf("free'd %d\n", *(int*) node->left->key);
+			printf("(hint) %d %d\n", node->left->left, node->left->right);
+			free(node->left);
+			node->left = 0;
+			return node;
+		}
+	} else {
+		node->right = _tree_remove_inorder(node->right, key, value, balance);
+
+		return _tree_balance_db(node, false, balance);
+	}
+}
+
 node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, void** value) {
 	if(node == 0) {
 		*value = 0;
@@ -211,169 +323,48 @@ node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, voi
 		*value = node->value;
 		if(node->left == 0 && node->right == 0) {
 			*balance = !node->red;
+			printf("free'd %d\n", *(int*) node->key);
 			free(node);
 			return 0;
 		} else if(node->left != 0 && node->right != 0) {
-			// TODO search for child replacement
-		} else if(node->left == 0) { // node->right != 0
+			node->left = _tree_remove_inorder(node->left, &node->key, &node->value, balance);
 
-		} else { // node->left != 0 && node->right == 0
-
+			return _tree_balance_db(node, true, balance);
+		} else if(node->left != 0) { // node->right == 0
+			node->key = node->left->key;
+			node->value = node->left->value;
+			printf("free'd %d\n", *(int*) node->left->key);
+			printf("(hint) %d %d\n", node->left->left, node->left->right);
+			free(node->left);
+			node->left = 0;
+			return node;
+		} else { // node->left == 0 && node->right != 0
+			node->key = node->right->key;
+			node->value = node->right->value;
+			printf("free'd %d\n", *(int*) node->right->key);
+			printf("(hint) %d %d\n", node->right->left, node->right->right);
+			free(node->right);
+			node->right = 0;
+			return node;
 		}
 	} else if(side < 0) {
-		
-	} else { /* side > 0 */
+		node->left = _tree_remove(node->left, key, comp, balance, value);
 
+		return _tree_balance_db(node, true, balance);
+	} else { /* side > 0 */
+		node->right = _tree_remove(node->right, key, comp, balance, value);
+
+		return _tree_balance_db(node, false, balance);
 	}
 }
 
 void* tree_remove(tree_t* tree, void* key, comp_func comp) {
 	void* result;
-	bool balance;
+	bool balance = false;
 
-	_tree_remove(tree->nodes, key, comp, &balance, &result);
+	tree->nodes = _tree_remove(tree->nodes, key, comp, &balance, &result);
 
 	return result;
-}
-
-node_t* _tree_remove2(node_t* node, void** key, comp_func comp, bool* balance, void** value, bool inorder) {
-	if(node == 0) {
-		*value = 0;
-		return 0;
-	}
-
-	int side;
-	if(!inorder) {
-		side = comp(node->key, *key);
-	} else {
-		side = node->right == 0 ? 0 : 1;
-	}
-
-	if(side == 0) {
-		*key = node->key;
-		*value = node->value;
-		if(node->left == 0 && node->right == 0) {
-			*balance = !node->red;
-			free(node);
-			return 0;
-		} else if(node->left != 0 && node->right != 0) {
-			void* new_key, *new_value;
-			_tree_remove2(node->left, &new_key, 0, balance, &new_value, true);
-			node->key = new_key;
-			node->value = new_value;
-			*balance = false;
-			return node;
-		} else if(node->left != 0) {
-			node->key = node->left->key;
-			node->value = node->left->value;
-			node->red = false;
-			free(node->left);
-			node->left = 0;
-		} else { // node->right != 0
-			node->key = node->right->key;
-			node->value = node->right->value;
-			node->red = false;
-			free(node->right);
-			node->right = 0;
-		}
-
-		return node;
-	} else {
-		*balance = false;
-
-		if(side < 0) {
-			node->left = _tree_remove2(node->left, key, comp, balance, value, false);
-
-			if(*balance) {
-				if(node->right == 0 || !node->right->red) {
-					if(node->right->right != 0 && node->right->right->red) {
-						node_t* new_node = node->right;
-						node_t* new_lr = new_node->left;
-						new_node->left = node;
-						new_node->left->right = new_lr;
-						new_node->right->red = false;
-						*balance = false;
-						return new_node;
-					} else if(node->right->left != 0 && node->right->left->red) {
-						node_t* new_node = node->right->left;
-						node_t* new_lr = new_node->left;
-						node_t* new_rl = new_node->right;
-						new_node->left = node;
-						new_node->right = node->right;
-						new_node->left->right = new_lr;
-						new_node->right->left = new_rl;
-						new_node->red = false;
-						*balance = false;
-						return new_node;
-					} else {
-						node->right->red = true;
-						return node;
-					}
-				} else {
-					node_t* new_node = node->right;
-					node_t* new_lr = new_node->left;
-					new_node->left = node;
-					new_node->left->right = new_lr;
-					new_node->red = false;
-					new_node->left->red = true;
-					*balance = false;
-					return new_node;
-				}
-			}
-		} else {
-			node->right = _tree_remove2(node->right, key, comp, balance, value, false);
-
-			if(*balance) {
-				if(node->left == 0 || !node->left->red) {
-					if(node->left->left != 0 && node->left->left->red) {
-						node_t* new_node = node->left;
-						node_t* new_lr = new_node->right;
-						new_node->right = node;
-						new_node->right->left = new_lr;
-						new_node->left->red = false;
-						*balance = false;
-						return new_node;
-					} else if(node->left->right != 0 && node->left->right->red) {
-						node_t* new_node = node->left->right;
-						node_t* new_lr = new_node->right;
-						node_t* new_rl = new_node->left;
-						new_node->right = node;
-						new_node->left = node->left;
-						new_node->right->left = new_lr;
-						new_node->left->right = new_rl;
-						new_node->red = false;
-						*balance = false;
-						return new_node;
-					} else {
-						node->left->red = true;
-						return node;
-					}
-				} else {
-					node_t* new_node = node->left;
-					node_t* new_lr = new_node->right;
-					new_node->right = node;
-					new_node->right->left = new_lr;
-					new_node->red = false;
-					new_node->right->red = true;
-					*balance = false;
-					return new_node;
-				}
-			}
-		}
-
-		return node;
-	}
-
-	return node;
-}
-
-void* tree_remove2(tree_t* tree, void** key, comp_func comp) {
-	bool balance;
-	void* value;
-
-	tree->nodes = _tree_remove2(tree->nodes, key, comp, &balance, &value, false);
-
-	return value;
 }
 
 void* _tree_search(node_t* node, void* key, comp_func comp) {
@@ -404,4 +395,76 @@ int tree_comp_str(void* a, void* b) {
 
 int tree_comp_strp(void* a, void* b) {
 	return strcmp(*(char**) a, *(char**) b);
+}
+
+void _tree_debug_print(node_t* node, int level, int* indent, int type) {
+	if(node == 0) {
+		if(level == 0) {
+			for(; *indent > 0; (*indent)--) {
+				printf(" ");
+			}
+			printf(" -- ");
+		} else {
+			*indent += 4;
+		}
+	} else {
+		_tree_debug_print(node->left, level - 1, indent, type);
+		if(level == 0) {
+			for(; *indent > 0; (*indent)--) {
+				printf(" ");
+			}
+			if(type == 0) {
+				printf(" %d%c ", *((int*) node->key), node->red ? 'R' : 'B');
+			} else if(type == 1) {
+				printf(" %s%c ", *((char**) node->key), node->red ? 'R' : 'B');
+			}
+		} else {
+			if(type == 0) {
+				*indent += 4;
+			} else if(type == 1) {
+				*indent += 4 + strlen(*((char**) node->key));
+			}
+		}
+		_tree_debug_print(node->right, level - 1, indent, type);
+	}
+}
+
+void tree_debug_print(tree_t* tree, int type) {
+	int depth = tree_depth(tree);
+	for(int i = 0; i <= depth; i++) {
+		int indent = 0;
+		_tree_debug_print(tree->nodes, i, &indent, type);
+		printf("\n\n\n");
+	}
+}
+
+bool _tree_debug_rb_validate(node_t* node, int* black_depth) {
+	if(node == 0) {
+		return true;
+	}
+
+	int l_depth = 0, r_depth = 0;
+
+	if(node->red) {
+		if(node->left != 0 && node->left->red) return false;
+		if(node->right != 0 && node->right->red) return false;
+	}
+
+	if(!_tree_debug_rb_validate(node->left, &l_depth)) return false;
+	if(!_tree_debug_rb_validate(node->right, &r_depth)) return false;
+	if(l_depth != r_depth) return false;
+
+	*black_depth += l_depth + (node->red ? 0 : 1);
+
+	return true;
+}
+
+bool tree_debug_rb_validate(tree_t* tree) {
+	if(tree->nodes == 0) {
+		return true;
+	}
+
+	int black_depth;
+
+	return _tree_debug_rb_validate(tree->nodes, &black_depth);
 }

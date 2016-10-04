@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <mcheck.h>
 
-extern void debug_print_tree(tree_t*);
+extern void tree_debug_print(tree_t*, int);
+extern bool tree_debug_rb_validate(tree_t*);
 
 struct undo_item {
 	enum {
@@ -23,17 +24,63 @@ char get_menu_selection();
 void store_db(db_t* db);
 db_t* load_db();
 
-int main() {
-	int a = 1, b = 2, c = 3;
+struct db {
+	list_t* db;
+	tree_t* tree;
+};
 
+int* aint(int a) {
+	int* _a = malloc(sizeof(int));
+	*_a = a;
+	return _a;
+}
+
+int main() {
 	tree_t* tree = tree_new();
-	tree_insert(tree, &b, 0, tree_comp_int);
-	tree_insert(tree, &a, 0, tree_comp_int);
-	tree_insert(tree, &c, 0, tree_comp_int);
-	debug_print_tree(tree);
-	int* _b = &b;
-	tree_remove(tree, (void**) &_b, tree_comp_int);
-	debug_print_tree(tree);
+
+	int _1 = 1, _2 = 2, _3 = 3, _4 = 4, _5 = 5, _6 = 6, _7 = 7, _8 = 8, _9 = 9;
+
+	tree_insert(tree, &_8, 0, tree_comp_int);
+	tree_insert(tree, &_7, 0, tree_comp_int);
+	tree_insert(tree, &_9, 0, tree_comp_int);
+	tree_insert(tree, &_1, 0, tree_comp_int);
+	tree_insert(tree, &_6, 0, tree_comp_int);
+	tree_insert(tree, &_5, 0, tree_comp_int);
+	tree_insert(tree, &_2, 0, tree_comp_int);
+	tree_insert(tree, &_3, 0, tree_comp_int);
+	tree_insert(tree, &_4, 0, tree_comp_int);
+	tree_debug_print(tree, 0);
+
+	tree_remove(tree, &_8, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_7, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_9, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_1, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_6, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_5, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_2, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_3, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+	tree_debug_print(tree, 0);
+	tree_remove(tree, &_4, tree_comp_int);
+	printf("%s\n", tree_debug_rb_validate(tree) ? "VALID" : "INVALID");
+
+	tree_debug_print(tree, 0);
+
+	tree_destroy(tree);
 
 	return 0;
 }
@@ -172,19 +219,20 @@ int main2(int argc, char* argv[]) {
 					char* response = ask_question_string(0);
 					if((response[0] == 'J' || response[0] == 'j') && response[1] == 0) {
 						confirm = true;
+						free(response);
 						break;
 					} else if((response[0] == 'N' || response[0] == 'n') && response[1] == 0) {
 						confirm = false;
+						free(response);
 						break;
 					}
+					free(response);
 				}
 
 				if(!confirm) {
 					puts("");
 					break;
 				}
-
-				// TODO confirm choice
 
 				struct undo_item* undo = malloc(sizeof(struct undo_item));
 				undo->type = undo_edited;
@@ -263,6 +311,18 @@ int main2(int argc, char* argv[]) {
 			case 'A':
 				loop = false;
 				break;
+
+			case 'D':
+			{
+				tree_debug_print(db->tree, 1);
+				for(int i = 0; i < list_length(undo_history); i++) {
+					struct undo_item* undo = (struct undo_item*) *list_get(undo_history, i);
+					if(undo->item != 0) {
+						printf("undo %s\n", db_item_name(undo->item));
+					}
+				}
+			}
+			break;
 		}
 	}
 
@@ -327,7 +387,8 @@ char get_menu_selection() {
 		c != 'G' &&
 		c != 'H' &&
 		c != 'S' &&
-		c != 'A');
+		c != 'A' &&
+		c != 'D');
 
 	return c;
 }

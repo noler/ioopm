@@ -144,8 +144,7 @@ void db_insert_item(db_t* db, item_t* item, int index) {
 item_t* db_replace_item(db_t* db, item_t* item, int index) {
 	item_t* old_item;
 	list_remove(db->list, index, (void**) &old_item);
-	char** name = &old_item->name;
-	tree_remove(db->tree, (void**) &name, tree_comp_strp);
+	tree_remove(db->tree, &old_item->name, tree_comp_strp);
 
 	list_insert(db->list, index, item);
 	tree_insert(db->tree, &item->name, item, tree_comp_strp);
@@ -189,8 +188,7 @@ item_t* db_remove_item(db_t* db, int index) {
 
 	item_t* item;
 	list_remove(db->list, index, (void**) &item);
-	char** name = &item->name;
-	tree_remove(db->tree, (void**) &name, tree_comp_strp);
+	tree_remove(db->tree, (void**) &item->name, tree_comp_strp);
 	return item;
 }
 
@@ -205,6 +203,8 @@ item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount) 
 	item->shelf = strdup(shelf);
 	item->amount = amount;
 
+	printf("created item %s\n", item->name);
+
 	return item;
 }
 
@@ -215,13 +215,24 @@ item_t* db_item_input() {
 	char* shelf = ask_question("Hylla: ", db_check_shelf, (convert_func) strdup).s;
 	int amount = ask_question_int("Antal: ");
 
+	printf("input item\n");
+
 	item_t* item = db_item_new(name, desc, price, shelf, amount);
 
 	free(name);
-	free(desc);
+	free(desc);calgrin
 	free(shelf);
 
 	return item;
+}
+
+void db_item_destroy(item_t* item) {
+	printf("destroy item %s\n", item->name);
+
+	free(item->name);
+	free(item->desc);
+	free(item->shelf);
+	free(item);
 }
 
 void db_item_print(item_t* item) {
@@ -276,13 +287,6 @@ void db_item_copy(item_t* from, item_t* to) {
 	to->desc = strdup(from->desc);
 	to->price = from->price;
 	to->shelf = strdup(from->shelf);
-}
-
-void db_item_destroy(item_t* item) {
-	free(item->name);
-	free(item->desc);
-	free(item->shelf);
-	free(item);
 }
 
 void db_print_item(item_t* item) {
