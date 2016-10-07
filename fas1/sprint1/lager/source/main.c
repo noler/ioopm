@@ -29,7 +29,40 @@ struct db {
 	tree_t* tree;
 };
 
-int main(int argc, char* argv[]) {
+int* aint(int a) {
+	int* result = malloc(sizeof(int));
+	*result = a;
+	return result;
+}
+
+int main() {
+	tree_t* tree = tree_new();
+	tree_insert(tree, aint(1), 0, tree_comp_int);
+	tree_insert(tree, aint(2), 0, tree_comp_int);
+	tree_insert(tree, aint(3), 0, tree_comp_int);
+	tree_insert(tree, aint(4), 0, tree_comp_int);
+	tree_insert(tree, aint(5), 0, tree_comp_int);
+
+	for(tree_tr_order order = tree_tr_pre_order; order <= tree_tr_post_order; order++) {
+		tree_tr_t* tr = tree_tr_new(tree, order);
+		for(; !tree_tr_after(tr); tree_tr_next(tr)) {
+			printf("%d\n",  *(int*) *tree_tr_current_key(tr));
+		}
+		tree_tr_destroy(tr);
+
+		printf("\n\n");
+	}
+
+	while(tree_size(tree) > 0) {
+		tree_remove(tree, 0, tree_comp_eq);
+	}
+
+	tree_destroy(tree);
+
+	return 0;
+}
+
+int main2(int argc, char* argv[]) {
 	FILE* file;
 
 	puts(
