@@ -117,21 +117,152 @@ void* tree_remove(tree_t* tree, void* key, comp_func comp);
  */
 void* tree_search(tree_t* tree, void* key, comp_func comp);
 
+/**
+ * @brief Create a new tree traverser.
+ *
+ * After calling tree_tr_new, the tree may not be modified before calling tree_tr_destroy on the traverser.
+ *
+ * @param tree The tree to create a traverser for.
+ * @param order The order in which the traverser will traverse the tree.
+ * @return The new traverser.
+ */
 tree_tr_t* tree_tr_new(tree_t* tree, tree_tr_order order);
+
+/**
+ * @brief Destroy a tree traverser and free any memory allocated for it.
+ *
+ * @param tr The traverser to destroy.
+ */
 void tree_tr_destroy(tree_tr_t* tr);
 
+/**
+ * @brief Move the traverser to the next node in the tree.
+ *
+ * Completes in @f$ O(log n) @f$ time.
+ *
+ * @param tr The traverser to move.
+ * @return The value of the node the traverser was on before the function call.
+ */
 void** tree_tr_next(tree_tr_t* tr);
-void** tree_tr_prev(tree_tr_t* tr); // Unimplemented
+
+/**
+ * @brief Move the traverser to the previous node in the tree.
+ *
+ * Completes in @f$ O(log n) @f$ time.
+ *
+ * @param tr The traverser to move.
+ * @return The value of the node the traverser was on before the function call.
+ */
+void** tree_tr_prev(tree_tr_t* tr);
+
+/**
+ * @brief Gives the key of the node the traverser is curently positioned on.
+ *
+ * @param tr The traverser to provide the key.
+ * @return The key of the node the traverser is currently on. 
+ */
 void** tree_tr_current_key(tree_tr_t* tr);
+
+/**
+ * @brief Gives the value of the node the traverser is curently positioned on.
+ *
+ * @param tr The traverser to provide the value.
+ * @return The value of the node the traverser is currently on. 
+ */
 void** tree_tr_current_value(tree_tr_t* tr);
 
+/**
+ * @brief Determines if the traverser is currently positioned on the first node in the tree.
+ *
+ * For pre- and level-order it competes in @f$ (1) @f$ timer.
+ * For in- and post-order it completes in @f$ O(log n) @f$ time the first time it's called
+ * and in @f$ O(1) @f$ time any subsequent call.
+ *
+ * @param tr The traverser to test.
+ * @return If the traverser is on the first node in the tree.
+ */
 bool tree_tr_first(tree_tr_t* tr);
+
+/**
+ * @brief Determines if the traverser is currently positioned on the last node in the tree.
+ *
+ * For post- it completes in @f$ O(1) @f$ time.
+ * For pre-, in- or level-order it completes in @f$ O(log n) @f$ time the first time it's called
+ * and in @f$ O(1) @f$ time any subsequent call.
+ *
+ * @param tr The traverser to test.
+ * @return If the traverser is on the last node in the tree.
+ */
 bool tree_tr_last(tree_tr_t* tr);
+
+/**
+ * @brief Determines if the traverser has moved past every node in the tree.
+ *
+ * @param tr The traverser to test.
+ * @return If the traverser is in the 'after' state (has moved past every node in the tree).
+ */
 bool tree_tr_after(tree_tr_t* tr);
 
-int tree_comp_eq(void* a, void* b);
+/**
+ * @brief Compares two ints.
+ *
+ * @param a The first int.
+ * @param b The second int.
+ * @return b - a
+ */
 int tree_comp_int(void* a, void* b);
+
+/**
+ * @brief Compares two null terminated strings.
+ *
+ * @param a The first string.
+ * @param b The second string.
+ * @return strcmp((char*) a, (char*) b)
+ */
 int tree_comp_str(void* a, void* b);
+
+/**
+ * @brief Compares two pointers to null terminated strings.
+ *
+ * @param a The first string-pointer.
+ * @param b The second string-pointer.
+ * @return strcmp(*(char**) a, *(char**) b)
+ */
 int tree_comp_strp(void* a, void* b);
+
+/**
+ * @brief A comparison function where every value is equl to any other value.
+ *
+ * Useful for targeting the root node in a tree.
+ *
+ * @param a The first value.
+ * @param b The second value.
+ * @return 0
+ */
+int tree_comp_eq(void* a, void* b);
+
+/**
+ * @brief A comparison function where a is always less than b.
+ *
+ * Useful for targeting the lowest node in a tree.
+ *
+ * @param a The first value.
+ * @param b The second value.
+ * @return -1
+ */
+int tree_comp_lt(void* a, void* b);
+
+
+/**
+ * @brief A comparison function where a is always greater than b.
+ *
+ * Useful for targeting the highest node in a tree.
+ *
+ * @param a The first value.
+ * @param b The second value.
+ * @return 1
+ */
+int tree_comp_lt(void* a, void* b);
+
 
 #endif /* __TREE_H__ */

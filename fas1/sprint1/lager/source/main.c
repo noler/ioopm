@@ -45,6 +45,8 @@ int main() {
 
 	for(tree_tr_order order = tree_tr_pre_order; order <= tree_tr_post_order; order++) {
 		tree_tr_t* tr = tree_tr_new(tree, order);
+		/*tree_tr_prev(tr);
+		  tree_tr_prev(tr);*/
 		for(; !tree_tr_after(tr); tree_tr_next(tr)) {
 			printf("%d\n",  *(int*) *tree_tr_current_key(tr));
 		}

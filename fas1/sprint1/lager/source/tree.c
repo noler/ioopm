@@ -28,7 +28,7 @@ struct tree_tr {
 	tree_tr_order order;
 	struct tree_node* node;
 	list_t* stack;
-	node_t* first, last;
+	node_t* first, *last;
 };
 
 void tree_debug_print(tree_t*, int);
@@ -384,7 +384,7 @@ tree_tr_t* tree_tr_new(tree_t* tree, tree_tr_order order) {
 	tree_tr_t* tr = malloc(sizeof(tree_tr_t));
 	tr->tree = tree;
 	tr->order = order;
-	tr->node = 0;
+	tr->node = tr->first = tr->last = 0;
 	tr->stack = list_new();
 	tree_tr_next(tr);
 	return tr;
@@ -406,21 +406,94 @@ typedef struct {
 	node_t* node;
 } tree_tr_stack_item;
 
-void** tree_tr_next(tree_tr_t* tr) {
+void** _tree_tr_move(tree_tr_t* tr, int dir) {
+	void** result;
 	int state;
+	// States:
+	// -1 return
+	// 0  pre-order action
+	// 1  left subtree
+	// 2  in-order action
+	// 3  right subtree
+	// 4  post-order action
+	// 5  return
 
 	if(tr->node == 0) {
+		if(tr->tree->nodes == 0) {
+			return 0;
+		}
 		tr->node = tr->tree->nodes;
-		state = 0;
+		state = dir == 1 ? 0 : 4;
+		result = 0;
 	} else {
-		state = 2 * (int) tr->order + 1;
+		state = 2 * (int) tr->order + dir;
 	}
 
 	while(state != 2 * (int) tr->order) {
 		if(state == 1) {
 			if(tr->node->left != 0) {
 				tree_tr_stack_item* stack_item = malloc(sizeof(tree_tr_stack_item));
-				stack_item->state = 2;
+				stack_item->state = 1;
+				stack_item->node = tr->node;
+				list_append(tr->stack, stack_item);
+				tr->node = tr->node->left;
+				state = dir == 1 ? 0 : 4;
+			} else {
+				state += dir;
+			}
+		} else if(state == 3) {
+			if(tr->node->right != 0) {
+				tree_tr_stack_item* stack_item = malloc(sizeof(tree_tr_stack_item));
+				stack_item->state = 3;
+				stack_item->node = tr->node;
+				list_append(tr->stack, stack_item);
+				tr->node = tr->node->right;
+				state = dir == 1 ? 0 : 4;
+			} else {
+				state += dir;
+			}
+		} else if(state == -1 || state == 5) {
+			if(list_length(tr->stack) == 0) {
+				tr->node = 0;
+				break;
+			}
+
+			tree_tr_stack_item* stack_item;
+			list_remove(tr->stack, list_length(tr->stack) - 1, (void**) &stack_item);
+			tr->node = stack_item->node;
+			state = stack_item->state + dir;
+			free(stack_item);
+		} else {
+			state += dir;
+		}
+	}
+
+	return result;
+}
+
+void** tree_tr_next(tree_tr_t* tr) {
+	return _tree_tr_move(tr, 1);
+
+	void** result;
+	int state;
+
+	if(tr->node == 0) {
+		if(tr->tree->nodes == 0) {
+			return 0;
+		}
+		tr->node = tr->tree->nodes;
+		state = 0;
+		result = 0;
+	} else {
+		state = 2 * (int) tr->order + 1;
+		result = &tr->node->value;
+	}
+
+	while(state != 2 * (int) tr->order) {
+		if(state == 1) {
+			if(tr->node->left != 0) {
+				tree_tr_stack_item* stack_item = malloc(sizeof(tree_tr_stack_item));
+				stack_item->state = 1;
 				stack_item->node = tr->node;
 				list_append(tr->stack, stack_item);
 				tr->node = tr->node->left;
@@ -431,7 +504,7 @@ void** tree_tr_next(tree_tr_t* tr) {
 		} else if(state == 3) {
 			if(tr->node->right != 0) {
 				tree_tr_stack_item* stack_item = malloc(sizeof(tree_tr_stack_item));
-				stack_item->state = 4;
+				stack_item->state = 3;
 				stack_item->node = tr->node;
 				list_append(tr->stack, stack_item);
 				tr->node = tr->node->right;
@@ -448,16 +521,73 @@ void** tree_tr_next(tree_tr_t* tr) {
 			tree_tr_stack_item* stack_item;
 			list_remove(tr->stack, list_length(tr->stack) - 1, (void**) &stack_item);
 			tr->node = stack_item->node;
-			state = stack_item->state;
+			state = stack_item->state + 1;
 			free(stack_item);
 		} else {
 			state++;
 		}
 	}
+
+	return result;
 }
 
 void** tree_tr_prev(tree_tr_t* tr) {
-	// TODO
+	return _tree_tr_move(tr, -1);
+
+	void** result;
+	int state = 0;
+
+	if(tr->node == 0) {
+		if(tr->tree->nodes == 0) {
+			return 0;
+		}
+		tr->node = tr->tree->nodes;
+		state = 4;
+		result = 0;
+	} else {
+		state = 2 * (int) tr->order - 1;
+	}
+
+	while(state != 2 * (int) tr->order) {
+		if(state == 1) {
+			if(tr->node->left != 0) {
+				tree_tr_stack_item* stack_item = malloc(sizeof(tree_tr_stack_item));
+				stack_item->state = 1;
+				stack_item->node = tr->node;
+				list_append(tr->stack, stack_item);
+				tr->node = tr->node->left;
+				state = 4;
+			} else {
+				state--;
+			}
+		} else if(state == 3) {
+			if(tr->node->right != 0) {
+				tree_tr_stack_item* stack_item = malloc(sizeof(tree_tr_stack_item));
+				stack_item->state = 3;
+				stack_item->node = tr->node;
+				list_append(tr->stack, stack_item);
+				tr->node = tr->node->right;
+				state = 4;
+			} else {
+				state--;
+			}
+		} else if(state == -1) {
+			if(list_length(tr->stack) == 0) {
+				tr->node = 0;
+				break;
+			}
+
+			tree_tr_stack_item* stack_item;
+			list_remove(tr->stack, list_length(tr->stack) - 1, (void**) &stack_item);
+			tr->node = stack_item->node;
+			state = stack_item->state - 1;
+			free(stack_item);
+		} else {
+			state--;
+		}
+	}
+
+	return result;
 }
 
 void** tree_tr_current_key(tree_tr_t* tr) {
@@ -478,7 +608,11 @@ void** tree_tr_current_value(tree_tr_t* tr) {
 
 bool tree_tr_first(tree_tr_t* tr) {
 	if(tr->node == 0 || tr->tree->nodes == 0) {
-		return 0;
+		return false;
+	}
+
+	if(tr->first != 0) {
+		return tr->first == tr->node;
 	}
 
 	node_t* first = tr->tree->nodes;
@@ -493,12 +627,16 @@ bool tree_tr_first(tree_tr_t* tr) {
 		}
 	}
 
-	return tr->node == first;
+	return tr->node == (tr->first = first);
 }
 
 bool tree_tr_last(tree_tr_t* tr) {
 	if(tr->node == 0 || tr->tree->nodes == 0) {
 		return 0;
+	}
+
+	if(tr->last != 0) {
+		return tr->last == tr->node;
 	}
 
 	node_t* last = tr->tree->nodes;
@@ -513,16 +651,11 @@ bool tree_tr_last(tree_tr_t* tr) {
 		}
 	}
 
-	// TODO
-	return tr->node == last;
+	return tr->node == (tr->last = last);
 }
 
 bool tree_tr_after(tree_tr_t* tr) {
 	return tr->node == 0;
-}
-
-int tree_comp_eq(void* a, void* b) {
-	return 0;
 }
 
 int tree_comp_int(void* a, void* b) {
@@ -535,6 +668,18 @@ int tree_comp_str(void* a, void* b) {
 
 int tree_comp_strp(void* a, void* b) {
 	return strcmp(*(char**) a, *(char**) b);
+}
+
+int tree_comp_eq(void* a, void* b) {
+	return 0;
+}
+
+int tree_comp_lt(void* a, void* b) {
+	return -1;
+}
+
+int tree_comp_gt(void* a, void* b) {
+	return 1;
 }
 
 void _tree_debug_print(node_t* node, int level, int* indent, int type) {
