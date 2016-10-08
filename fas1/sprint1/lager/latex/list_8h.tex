@@ -1,0 +1,433 @@
+\hypertarget{list_8h}{}\section{source/list.h File Reference}
+\label{list_8h}\index{source/list.\+h@{source/list.\+h}}
+{\ttfamily \#include $<$stdbool.\+h$>$}\\*
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structlist}{list} \hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t}\hypertarget{list_8h_a15376354e4e8b4f1732e9df17f30786c}{}\label{list_8h_a15376354e4e8b4f1732e9df17f30786c}
+
+\begin{DoxyCompactList}\small\item\em Represents an ordered list. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structlist__it}{list\+\_\+it} \hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t}\hypertarget{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{}\label{list_8h_a1f45af3deaa4a874da8e555b8e820aef}
+
+\begin{DoxyCompactList}\small\item\em Represents an iterator for a list\+\_\+t. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$ \hyperlink{list_8h_a9dd3eafdb56dcc64689f78fb4acdff3f}{list\+\_\+new} ()\hypertarget{list_8h_a9dd3eafdb56dcc64689f78fb4acdff3f}{}\label{list_8h_a9dd3eafdb56dcc64689f78fb4acdff3f}
+
+\begin{DoxyCompactList}\small\item\em Creates a new list\+\_\+t. \end{DoxyCompactList}\item 
+void \hyperlink{list_8h_af04149a6092f6c1960ffe1556fa0e612}{list\+\_\+destroy} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list})
+\begin{DoxyCompactList}\small\item\em Destroys a list\+\_\+t, freeing any memory allocated for the list. \end{DoxyCompactList}\item 
+int \hyperlink{list_8h_a95d76edca6b694b79ec54acd31fe0b82}{list\+\_\+length} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list})
+\begin{DoxyCompactList}\small\item\em Gives the number of elements in a list. \end{DoxyCompactList}\item 
+void \hyperlink{list_8h_a1b75d58df3617dd6ed7e545302cf450b}{list\+\_\+append} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list}, void $\ast$elem)
+\begin{DoxyCompactList}\small\item\em Appends elem to the end of the list. \end{DoxyCompactList}\item 
+void \hyperlink{list_8h_a682b9de1af3ae61df29b90d5d7cf4635}{list\+\_\+prepend} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list}, void $\ast$elem)
+\begin{DoxyCompactList}\small\item\em Prepends elem to the start of the list. \end{DoxyCompactList}\item 
+bool \hyperlink{list_8h_a60dd8e610cc9b0a7bad9413942b15b31}{list\+\_\+insert} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list}, int index, void $\ast$elem)
+\begin{DoxyCompactList}\small\item\em Inserts elem into the list at the given index. \end{DoxyCompactList}\item 
+bool \hyperlink{list_8h_a6f09505efe9a7d9468491d0e56c632e8}{list\+\_\+remove} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list}, int index, void $\ast$$\ast$elem)
+\begin{DoxyCompactList}\small\item\em Removes an element at the given index. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{list_8h_abdd36b262496d4a79cafb24740abd6ad}{list\+\_\+get} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list}, int index)
+\begin{DoxyCompactList}\small\item\em Gives the element at the given index. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{list_8h_a17db498966456a086b9a49ba695a3ee0}{list\+\_\+first} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list})
+\begin{DoxyCompactList}\small\item\em Gives the first element in the list. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{list_8h_ab7f6d8c5a8786a63042d185816b0e0a7}{list\+\_\+last} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list})
+\begin{DoxyCompactList}\small\item\em Gives the last element in the list. \end{DoxyCompactList}\item 
+\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$ \hyperlink{list_8h_a184adcab6df805c351db4ddc52d26060}{list\+\_\+it\+\_\+new} (\hyperlink{list_8h_a15376354e4e8b4f1732e9df17f30786c}{list\+\_\+t} $\ast$\hyperlink{structlist}{list})
+\begin{DoxyCompactList}\small\item\em Creates a new iterator for the given list. \end{DoxyCompactList}\item 
+void \hyperlink{list_8h_a365244359d3b25caa5d451e7f60272e7}{list\+\_\+it\+\_\+destroy} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Destroys a list iterator and free\textquotesingle{}s memory allocated for it. \end{DoxyCompactList}\item 
+bool \hyperlink{list_8h_aa8d20a45baa088abfafca440369c6ed7}{list\+\_\+it\+\_\+first} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Determines whether or not the iterator is at the first element in the list. \end{DoxyCompactList}\item 
+bool \hyperlink{list_8h_af6ae6f721070a9f9e2ffa0b93b8e6d53}{list\+\_\+it\+\_\+last} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Determines whether or not the iterator is at the last element in the list. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{list_8h_a609775589745c736e6f0b0c2100b90e9}{list\+\_\+it\+\_\+current} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Gives the element the iterator is currently at. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{list_8h_a0f7213eed54c4330887aca5d3a8b89cc}{list\+\_\+it\+\_\+next} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Moves the iterator to the next element in the list. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{list_8h_a030ff1ee268592c7195915b6514d1125}{list\+\_\+it\+\_\+prev} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Moves the iterator to the previous element in the list. \end{DoxyCompactList}\item 
+void \hyperlink{list_8h_ad8e8090abb15f5afa8715b09e1c66d83}{list\+\_\+it\+\_\+seek} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it, int index)
+\begin{DoxyCompactList}\small\item\em Moves the iterator to the gives index in the list. \end{DoxyCompactList}\item 
+int \hyperlink{list_8h_a9d2e1c997849f4b23f04e40f76208d92}{list\+\_\+it\+\_\+index} (\hyperlink{list_8h_a1f45af3deaa4a874da8e555b8e820aef}{list\+\_\+it\+\_\+t} $\ast$it)
+\begin{DoxyCompactList}\small\item\em Gives the current index of the given iterator. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Andreas Olofsson 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+
+
+\subsection{Function Documentation}
+\index{list.\+h@{list.\+h}!list\+\_\+append@{list\+\_\+append}}
+\index{list\+\_\+append@{list\+\_\+append}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+append(list\+\_\+t $\ast$list, void $\ast$elem)}{list\_append(list\_t *list, void *elem)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+append (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list, }
+\item[{void $\ast$}]{elem}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a1b75d58df3617dd6ed7e545302cf450b}{}\label{list_8h_a1b75d58df3617dd6ed7e545302cf450b}
+
+
+Appends elem to the end of the list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to append to. \\
+\hline
+{\em elem} & The element to append. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+destroy@{list\+\_\+destroy}}
+\index{list\+\_\+destroy@{list\+\_\+destroy}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+destroy(list\+\_\+t $\ast$list)}{list\_destroy(list\_t *list)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+destroy (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_af04149a6092f6c1960ffe1556fa0e612}{}\label{list_8h_af04149a6092f6c1960ffe1556fa0e612}
+
+
+Destroys a list\+\_\+t, freeing any memory allocated for the list. 
+
+Destroys the provided list and free\textquotesingle{}s any memory allocated for it. Doesn\textquotesingle{}t free any memory alloc\textquotesingle{}d for the elements stored within the list, they must be manually free\textquotesingle{}d be the user. Any use of the provided list\+\_\+t is invalid after calling list\+\_\+destroy.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to destroy. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+first@{list\+\_\+first}}
+\index{list\+\_\+first@{list\+\_\+first}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+first(list\+\_\+t $\ast$list)}{list\_first(list\_t *list)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ list\+\_\+first (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a17db498966456a086b9a49ba695a3ee0}{}\label{list_8h_a17db498966456a086b9a49ba695a3ee0}
+
+
+Gives the first element in the list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to get from. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+get@{list\+\_\+get}}
+\index{list\+\_\+get@{list\+\_\+get}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+get(list\+\_\+t $\ast$list, int index)}{list\_get(list\_t *list, int index)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ list\+\_\+get (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list, }
+\item[{int}]{index}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_abdd36b262496d4a79cafb24740abd6ad}{}\label{list_8h_abdd36b262496d4a79cafb24740abd6ad}
+
+
+Gives the element at the given index. 
+
+Completes in $ O(n) $ time where $ n $ is index.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to get from. \\
+\hline
+{\em index} & The index to get from. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the element. The value at the pointer may be modified in order to replace an element in-\/place. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+insert@{list\+\_\+insert}}
+\index{list\+\_\+insert@{list\+\_\+insert}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+insert(list\+\_\+t $\ast$list, int index, void $\ast$elem)}{list\_insert(list\_t *list, int index, void *elem)}}]{\setlength{\rightskip}{0pt plus 5cm}bool list\+\_\+insert (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list, }
+\item[{int}]{index, }
+\item[{void $\ast$}]{elem}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a60dd8e610cc9b0a7bad9413942b15b31}{}\label{list_8h_a60dd8e610cc9b0a7bad9413942b15b31}
+
+
+Inserts elem into the list at the given index. 
+
+Completes in $ O(n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to insert into. \\
+\hline
+{\em index} & The index to insert at. \\
+\hline
+{\em elem} & The element to be inserted. Must be between 0 and the length of the list -\/ 1. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether of not the insert was successful. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+current@{list\+\_\+it\+\_\+current}}
+\index{list\+\_\+it\+\_\+current@{list\+\_\+it\+\_\+current}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+current(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_current(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ list\+\_\+it\+\_\+current (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a609775589745c736e6f0b0c2100b90e9}{}\label{list_8h_a609775589745c736e6f0b0c2100b90e9}
+
+
+Gives the element the iterator is currently at. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to get from. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the element the iterator is currently at. The value at the pointer may be modified without invalidating the iterator. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+destroy@{list\+\_\+it\+\_\+destroy}}
+\index{list\+\_\+it\+\_\+destroy@{list\+\_\+it\+\_\+destroy}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+destroy(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_destroy(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+it\+\_\+destroy (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a365244359d3b25caa5d451e7f60272e7}{}\label{list_8h_a365244359d3b25caa5d451e7f60272e7}
+
+
+Destroys a list iterator and free\textquotesingle{}s memory allocated for it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to destroy. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+first@{list\+\_\+it\+\_\+first}}
+\index{list\+\_\+it\+\_\+first@{list\+\_\+it\+\_\+first}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+first(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_first(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}bool list\+\_\+it\+\_\+first (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_aa8d20a45baa088abfafca440369c6ed7}{}\label{list_8h_aa8d20a45baa088abfafca440369c6ed7}
+
+
+Determines whether or not the iterator is at the first element in the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If the iterator is at the first element in the list. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+index@{list\+\_\+it\+\_\+index}}
+\index{list\+\_\+it\+\_\+index@{list\+\_\+it\+\_\+index}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+index(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_index(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}int list\+\_\+it\+\_\+index (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a9d2e1c997849f4b23f04e40f76208d92}{}\label{list_8h_a9d2e1c997849f4b23f04e40f76208d92}
+
+
+Gives the current index of the given iterator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to get the index from. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+last@{list\+\_\+it\+\_\+last}}
+\index{list\+\_\+it\+\_\+last@{list\+\_\+it\+\_\+last}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+last(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_last(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}bool list\+\_\+it\+\_\+last (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_af6ae6f721070a9f9e2ffa0b93b8e6d53}{}\label{list_8h_af6ae6f721070a9f9e2ffa0b93b8e6d53}
+
+
+Determines whether or not the iterator is at the last element in the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If the iterator is at the list element in the list. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+new@{list\+\_\+it\+\_\+new}}
+\index{list\+\_\+it\+\_\+new@{list\+\_\+it\+\_\+new}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+new(list\+\_\+t $\ast$list)}{list\_it\_new(list\_t *list)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf list\+\_\+it\+\_\+t}$\ast$ list\+\_\+it\+\_\+new (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a184adcab6df805c351db4ddc52d26060}{}\label{list_8h_a184adcab6df805c351db4ddc52d26060}
+
+
+Creates a new iterator for the given list. 
+
+The iterator starts at index 0 unless the list is empty. The iterator is not valid if the list is modified after the iterator is created.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to iterate over. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The list iterator. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+next@{list\+\_\+it\+\_\+next}}
+\index{list\+\_\+it\+\_\+next@{list\+\_\+it\+\_\+next}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+next(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_next(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ list\+\_\+it\+\_\+next (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a0f7213eed54c4330887aca5d3a8b89cc}{}\label{list_8h_a0f7213eed54c4330887aca5d3a8b89cc}
+
+
+Moves the iterator to the next element in the list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to update. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the element the iterator was at before the function call; 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+prev@{list\+\_\+it\+\_\+prev}}
+\index{list\+\_\+it\+\_\+prev@{list\+\_\+it\+\_\+prev}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+prev(list\+\_\+it\+\_\+t $\ast$it)}{list\_it\_prev(list\_it\_t *it)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ list\+\_\+it\+\_\+prev (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a030ff1ee268592c7195915b6514d1125}{}\label{list_8h_a030ff1ee268592c7195915b6514d1125}
+
+
+Moves the iterator to the previous element in the list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to update. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the element the iterator was at before the function call; 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+it\+\_\+seek@{list\+\_\+it\+\_\+seek}}
+\index{list\+\_\+it\+\_\+seek@{list\+\_\+it\+\_\+seek}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+it\+\_\+seek(list\+\_\+it\+\_\+t $\ast$it, int index)}{list\_it\_seek(list\_it\_t *it, int index)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+it\+\_\+seek (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+it\+\_\+t} $\ast$}]{it, }
+\item[{int}]{index}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_ad8e8090abb15f5afa8715b09e1c66d83}{}\label{list_8h_ad8e8090abb15f5afa8715b09e1c66d83}
+
+
+Moves the iterator to the gives index in the list. 
+
+Completes in $ O(n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em it} & The iterator to update. \\
+\hline
+{\em index} & The index to set the iterator at. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+last@{list\+\_\+last}}
+\index{list\+\_\+last@{list\+\_\+last}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+last(list\+\_\+t $\ast$list)}{list\_last(list\_t *list)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ list\+\_\+last (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_ab7f6d8c5a8786a63042d185816b0e0a7}{}\label{list_8h_ab7f6d8c5a8786a63042d185816b0e0a7}
+
+
+Gives the last element in the list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to get from. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+length@{list\+\_\+length}}
+\index{list\+\_\+length@{list\+\_\+length}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+length(list\+\_\+t $\ast$list)}{list\_length(list\_t *list)}}]{\setlength{\rightskip}{0pt plus 5cm}int list\+\_\+length (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a95d76edca6b694b79ec54acd31fe0b82}{}\label{list_8h_a95d76edca6b694b79ec54acd31fe0b82}
+
+
+Gives the number of elements in a list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The number of elements in list. 
+\end{DoxyReturn}
+\index{list.\+h@{list.\+h}!list\+\_\+prepend@{list\+\_\+prepend}}
+\index{list\+\_\+prepend@{list\+\_\+prepend}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+prepend(list\+\_\+t $\ast$list, void $\ast$elem)}{list\_prepend(list\_t *list, void *elem)}}]{\setlength{\rightskip}{0pt plus 5cm}void list\+\_\+prepend (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list, }
+\item[{void $\ast$}]{elem}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a682b9de1af3ae61df29b90d5d7cf4635}{}\label{list_8h_a682b9de1af3ae61df29b90d5d7cf4635}
+
+
+Prepends elem to the start of the list. 
+
+Completes in $ O(1) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to prepend to. \\
+\hline
+{\em elem} & The element to prepend. \\
+\hline
+\end{DoxyParams}
+\index{list.\+h@{list.\+h}!list\+\_\+remove@{list\+\_\+remove}}
+\index{list\+\_\+remove@{list\+\_\+remove}!list.\+h@{list.\+h}}
+\subsubsection[{\texorpdfstring{list\+\_\+remove(list\+\_\+t $\ast$list, int index, void $\ast$$\ast$elem)}{list\_remove(list\_t *list, int index, void **elem)}}]{\setlength{\rightskip}{0pt plus 5cm}bool list\+\_\+remove (
+\begin{DoxyParamCaption}
+\item[{{\bf list\+\_\+t} $\ast$}]{list, }
+\item[{int}]{index, }
+\item[{void $\ast$$\ast$}]{elem}
+\end{DoxyParamCaption}
+)}\hypertarget{list_8h_a6f09505efe9a7d9468491d0e56c632e8}{}\label{list_8h_a6f09505efe9a7d9468491d0e56c632e8}
+
+
+Removes an element at the given index. 
+
+Returns the removed element in the provided elem pointer if the pointer is not N\+U\+LL.
+
+Completes in $ O(n) $ time where $ n $ is index.
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to remove from. \\
+\hline
+{\em index} & The index of the element to remove. \\
+\hline
+{\em elem} & \\
+\hline
+\end{DoxyParams}
