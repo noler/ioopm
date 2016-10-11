@@ -155,18 +155,22 @@ void _tree_balance(node_t** node_ptr) {
 	}
 }
 
-node_t* _tree_insert(node_t* node, void* key, void* value, comp_func comp) {
+node_t* _tree_insert(node_t* node, void* key, void** value, comp_func comp) {
 	if(node == 0) {
 		node = malloc(sizeof(node_t));
 		node->red = true;
 		node->left = node->right = 0;
 		node->key = key;
-		node->value = value;
+		node->value = *value;
+		*value = 0;
 		return node;
 	} else {
 		int side = comp(node->key, key);
 		if(side == 0) {
-			node->value = value;
+			void* last_value = node->value;
+			node->key = key;
+			node->value = *value;
+			*value = last_value;
 		} else if(side < 0) {
 			node->left = _tree_insert(node->left, key, value, comp);
 			_tree_balance(&node);
@@ -179,9 +183,10 @@ node_t* _tree_insert(node_t* node, void* key, void* value, comp_func comp) {
 	return 0;
 }
 
-void tree_insert(tree_t* tree, void* key, void* value, comp_func comp) {
-	tree->nodes = _tree_insert(tree->nodes, key, value, comp);
+void* tree_insert(tree_t* tree, void* key, void* value, comp_func comp) {
+	tree->nodes = _tree_insert(tree->nodes, key, &value, comp);
 	tree->nodes->red = false;
+	return value;
 }
 
 node_t* _tree_balance_db(node_t* node, bool left, bool* balance) {
@@ -312,14 +317,15 @@ node_t* _tree_remove_inorder(node_t* node, void** key, void** value, bool* balan
 	}
 }
 
-node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, void** value) {
+node_t* _tree_remove(node_t* node, void** key, comp_func comp, bool* balance, void** value) {
 	if(node == 0) {
 		*value = 0;
 		return 0;
 	}
 
-	int side = comp(node->key, key);
+	int side = comp(node->key, *key);
 	if(side == 0) {
+		*key = node->key;
 		*value = node->value;
 		if(node->left == 0 && node->right == 0) {
 			*balance = !node->red;
@@ -353,7 +359,7 @@ node_t* _tree_remove(node_t* node, void* key, comp_func comp, bool* balance, voi
 	}
 }
 
-void* tree_remove(tree_t* tree, void* key, comp_func comp) {
+void* tree_remove(tree_t* tree, void** key, comp_func comp) {
 	void* result;
 	bool balance = false;
 
@@ -362,7 +368,7 @@ void* tree_remove(tree_t* tree, void* key, comp_func comp) {
 	return result;
 }
 
-void* _tree_search(node_t* node, void* key, comp_func comp) {
+void** _tree_search(node_t* node, void* key, comp_func comp) {
 	if(node == 0) return 0;
 
 	int side = comp(node->key, key);
@@ -372,11 +378,11 @@ void* _tree_search(node_t* node, void* key, comp_func comp) {
 	} else if(side > 0) {
 		return _tree_search(node->right, key, comp);
 	} else {
-		return node->value;
+		return &node->value;
 	}
 }
 
-void* tree_search(tree_t* tree, void* key, comp_func comp) {
+void** tree_search(tree_t* tree, void* key, comp_func comp) {
 	return _tree_search(tree->nodes, key, comp);
 }
 

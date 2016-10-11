@@ -91,7 +91,7 @@ int tree_depth(tree_t* tree);
  * @param value The value of the node to insert.
  * @param comp A function to compare the given key to any other key in the tree.
  */
-void tree_insert(tree_t* tree, void* key, void* value, comp_func comp);
+void* tree_insert(tree_t* tree, void* key, void* value, comp_func comp);
 
 /**
  * @brief Removes the node from the tree with the given key.
@@ -104,7 +104,7 @@ void tree_insert(tree_t* tree, void* key, void* value, comp_func comp);
  * @param key The key of the node to remove.
  * @param comp A function to compare the given key to any other key in the tree.
  */
-void* tree_remove(tree_t* tree, void* key, comp_func comp);
+void* tree_remove(tree_t* tree, void** key, comp_func comp);
 
 /**
  * @brief Search for a value in the tree.
@@ -115,7 +115,7 @@ void* tree_remove(tree_t* tree, void* key, comp_func comp);
  * @param key The key of the node to find the value of.
  * @param comp A function to compare the given key to any other key in the tree.
  */
-void* tree_search(tree_t* tree, void* key, comp_func comp);
+void** tree_search(tree_t* tree, void* key, comp_func comp);
 
 /**
  * @brief Create a new tree traverser.

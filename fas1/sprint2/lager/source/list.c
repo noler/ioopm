@@ -120,6 +120,10 @@ bool list_remove(list_t* list, int index, void** elem) {
 		if(list->first != 0)
 			list->first->prev = 0;
 
+		if(list->last == removed) {
+			list->last = 0;
+		}
+
 		if(elem != 0)
 			*elem = removed->elem;
 

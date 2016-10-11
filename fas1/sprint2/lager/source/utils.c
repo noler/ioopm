@@ -1,8 +1,24 @@
 #include "utils.h"
 
+#include <ctype.h>
 #include <stdlib.h>
 
 extern char* strdup(const char*);
+
+int strcmpi(const char* a, const char* b) {
+	for(; *a != 0 || *b != 0; a++, b++) {
+		char c1 = tolower(*a);
+		char c2 = tolower(*b);
+
+		if(c1 < c2) {
+			return -1;
+		} else if(c1 > c2) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
 
 int read_string(char* buf, int buf_size) {
 	int i;
@@ -26,6 +42,19 @@ bool is_number(char* str) {
 	}
 
 	return true;
+}
+
+char* question_true_response;
+char* question_false_response;
+
+bool question_is_bool(char* str) {
+	if(strcmp(str, question_true_response) == 0) {
+		return true;
+	}
+	if(strcmp(str, question_false_response) == 0) {
+		return true;
+	}
+	return false;
 }
 
 bool not_empty(char* str) {
@@ -91,6 +120,10 @@ answer_t make_answer_float(char* str) {
 	return (answer_t) value;
 }
 
+answer_t make_answer_bool(char* str) {
+	return (answer_t) (strcmp(str, question_true_response) == 0);
+}
+
 answer_t ask_question(char* question, check_func check, convert_func convert) {
 	char buffer[512];
 
@@ -110,11 +143,26 @@ int ask_question_int(char* question) {
 }
 
 char* ask_question_string(char* question) {
-	answer_t result = ask_question(question, not_empty, make_answer_str);
-	return result.s;
+	return ask_question(question, not_empty, make_answer_str).s;
 }
 
 float ask_question_float(char* question) {
-	answer_t result = ask_question(question, is_float, make_answer_float);
-	return result.f;
+	return ask_question(question, is_float, make_answer_float).f;
+}
+
+bool ask_question_bool(char* question, char* true_response, char* false_response) {
+	for(;;) {
+		if(question != 0) {
+			puts(question);
+		}
+
+		char buffer[512];
+		read_string(buffer, 512);
+
+		if(strcmpi(buffer, true_response) == 0) {
+			return true;
+		} else if(strcmpi(buffer, false_response) == 0) {
+			return false;
+		}
+	}
 }

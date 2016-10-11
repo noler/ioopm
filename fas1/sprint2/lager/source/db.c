@@ -11,23 +11,22 @@
 
 extern char* strdup(const char*);
 
-struct item {
+struct db {
+	list_t* item_list;
+	tree_t* item_tree;
+	tree_t* shelf_tree;
+};
+
+struct db_item {
 	char* name, *desc;
 	int price;
-	char* shelf;
+	list_t* shelves;
+};
+
+struct db_shelf {
+	char* name;
 	int amount;
 };
-
-struct db {
-	list_t* list;
-	tree_t* tree;
-};
-
-int db_tree_comp_name(void* a, void* b) {
-	item_t* item_a = (item_t*) a;
-	item_t* item_b = (item_t*) b;
-	return strcmp(item_a->name, item_b->name);
-}
 
 bool db_check_shelf(char* str) {
 	if(!('A' <= *str && *str <= 'Z') &&
@@ -39,18 +38,20 @@ bool db_check_shelf(char* str) {
 
 db_t* db_new() {
 	db_t* db = (db_t*) malloc(sizeof(db_t));
-	db->list = list_new();
-	db->tree = tree_new();
+	db->item_list = list_new();
+	db->item_tree = tree_new();
+	db->shelf_tree = tree_new();
 	return db;
 }
 
 void db_destroy(db_t* db) {
-	list_destroy(db->list);
-	tree_destroy(db->tree);
+	list_destroy(db->item_list);
+	tree_destroy(db->item_tree);
+	tree_destroy(db->shelf_tree);
 	free(db);
 }
 
-db_t* db_read(FILE* file) {
+/*db_t* db_read(FILE* file) {
 	db_t* db = db_new();
 
 	int i;
@@ -114,179 +115,282 @@ void db_write(FILE* file, db_t* db) {
 	}
 
 	list_it_destroy(it);
-}
+}*/
 
 int db_num_items(db_t* db) {
-	return list_length(db->list);
+	return list_length(db->item_list);
 }
 
 void db_list(db_t* db) {
-	int list_len = list_length(db->list);
-
-	for(int i = 0; i < list_len; i++) {
-		item_t* item = (item_t*) *list_get(db->list, i);
-		printf("%d. %s\n", i + 1, item->name);
-	}
-
-	puts("");
-}
-
-void db_add_item(db_t* db, item_t* item) {
-	list_append(db->list, item);
-	tree_insert(db->tree, &item->name, item, tree_comp_strp);
-}
-
-void db_insert_item(db_t* db, item_t* item, int index) {
-	list_insert(db->list, index, item);
-	tree_insert(db->tree, &item->name, item, tree_comp_strp);
-}
-
-item_t* db_replace_item(db_t* db, item_t* item, int index) {
-	item_t* old_item;
-	list_remove(db->list, index, (void**) &old_item);
-	tree_remove(db->tree, &old_item->name, tree_comp_strp);
-
-	list_insert(db->list, index, item);
-	tree_insert(db->tree, &item->name, item, tree_comp_strp);
-
-	return old_item;
-}
-
-item_t* db_get_item(db_t* db, int index) {
-	if(index < 0) return 0;
-	if(index >= list_length(db->list)) return 0;
-
-	return (item_t*) *list_get(db->list, index);
-}
-
-item_t* db_find_item_name(db_t* db, char* name) {
-	return (item_t*) tree_search(db->tree, &name, tree_comp_strp);
-}
-
-item_t* db_find_item_shelf(db_t* db, char* name) {
-	list_it_t* it = list_it_new(db->list);
-	while(1) {
-		item_t** item = (item_t**) list_it_next(it);
+	list_it_t* it = list_it_new(db->item_list);
+	for(int i = 0;; i++) {
+		db_item_t** item = (db_item_t**) list_it_next(it);
 
 		if(item == 0) {
 			break;
 		}
 
-		if(strcmp((*item)->shelf, name) == 0) {
-			list_it_destroy(it);
-			return *item;
-		}
+		printf("%d. %s\n", i + 1, (*item)->name);
 	}
 	list_it_destroy(it);
 
-	return 0;
+	puts("");
 }
 
-item_t* db_remove_item(db_t* db, int index) {
-	if(index < 0) return 0;
-	if(index >= list_length(db->list)) return 0;
+void db_add_item(db_t* db, db_item_t* item) {
+	db_insert_item(db, item, db_num_items(db));
+}
 
-	item_t* item;
-	list_remove(db->list, index, (void**) &item);
-	tree_remove(db->tree, (void**) &item->name, tree_comp_strp);
+void db_insert_item(db_t* db, db_item_t* item, int index) {
+	list_insert(db->item_list, index, item);
+	tree_insert(db->item_tree, &item->name, item, tree_comp_strp);
+
+	list_it_t* it = list_it_new(item->shelves);
+	for(;;) {
+		db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+		if(shelf == 0) {
+			break;
+		}
+
+		db_item_t* shelf_item = tree_insert(db->shelf_tree, (*shelf)->name, item, tree_comp_str);
+
+		if(shelf_item != 0) {
+			int shelf_index = 0;
+
+			list_it_t* it = list_it_new(shelf_item->shelves);
+			for(int i = 0;; i++) {
+				db_shelf_t** shelf2 = (db_shelf_t**) list_it_next(it);
+
+				if(shelf2 == 0) {
+					break;
+				}
+
+				if(strcmp((*shelf)->name, (*shelf2)->name) == 0) {
+					shelf_index = i;
+					break;
+				}
+			}
+			list_it_destroy(it);
+
+			db_shelf_t* shelf_remove;
+			list_remove(shelf_item->shelves, shelf_index, (void**) &shelf_remove);
+			db_shelf_destroy(shelf_remove);
+		}
+	}
+	list_it_destroy(it);
+}
+
+db_item_t* db_replace_item(db_t* db, db_item_t* item, int index) {
+	db_item_t* old_item = db_remove_item(db, index);
+	db_insert_item(db, item, index);
+	return old_item;
+}
+
+db_item_t* db_get_item(db_t* db, int index) {
+	if(index < 0) return 0;
+	if(index >= list_length(db->item_list)) return 0;
+
+	return (db_item_t*) *list_get(db->item_list, index);
+}
+
+db_item_t* db_find_item_name(db_t* db, char* name) {
+	return (db_item_t*) tree_search(db->item_tree, &name, tree_comp_strp);
+}
+
+db_item_t* db_find_item_shelf(db_t* db, char* name) {
+	void** result = tree_search(db->shelf_tree, name, tree_comp_str);
+
+	if(result == 0) {
+		return 0;
+	} else {
+		return *(db_item_t**) result;
+	}
+}
+
+db_item_t* db_remove_item(db_t* db, int index) {
+	if(index < 0) return 0;
+	if(index >= list_length(db->item_list)) return 0;
+
+	db_item_t* item;
+	list_remove(db->item_list, index, (void**) &item);
+	char** name = &item->name;
+	tree_remove(db->item_tree, (void**) &name, tree_comp_strp);
+
+	list_it_t* it = list_it_new(item->shelves);
+	for(;;) {
+		db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+		if(shelf == 0) {
+			break;
+		}
+
+		char* name = (*shelf)->name;
+		tree_remove(db->shelf_tree, (void**) &name, tree_comp_str);
+	}
+	list_it_destroy(it);
+
 	return item;
 }
 
-item_t* db_item_new(char* name, char* desc, int price, char* shelf, int amount) {
-	item_t* item = (item_t*) malloc(sizeof(item_t));
+db_item_t* db_item_new(char* name, char* desc, int price, list_t* shelves) {
+	db_item_t* item = (db_item_t*) malloc(sizeof(db_item_t));
 
 	item->name = strdup(name);
 	item->desc = strdup(desc);
 	item->price = price;
-	item->shelf = strdup(shelf);
-	item->amount = amount;
+	item->shelves = list_new();
+	list_it_t* it = list_it_new(shelves);
+	for(;;) {
+		db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+		if(shelf == 0) {
+			break;
+		}
+
+		list_append(item->shelves, db_shelf_copy(*shelf));
+	}
+	list_it_destroy(it);
 
 	return item;
 }
 
-item_t* db_item_input() {
-	char* name = ask_question_string("Namn: ");
-	char* desc = ask_question_string("Beskrivning: ");
-	int price = ask_question_int("Pris: ");
-	char* shelf = ask_question("Hylla: ", db_check_shelf, (convert_func) strdup).s;
-	int amount = ask_question_int("Antal: ");
-
-	printf("input item\n");
-
-	item_t* item = db_item_new(name, desc, price, shelf, amount);
-
-	free(name);
-	free(desc);
-	free(shelf);
-
-	return item;
-}
-
-void db_item_destroy(item_t* item) {
-	free(item->name);
-	free(item->desc);
-	free(item->shelf);
-	free(item);
-}
-
-void db_item_print(item_t* item) {
-	printf(
-		"Namn: %s\n"
-		"Beskrivning: %s\n"
-		"Pris: %d\n"
-		"Hylla: %s\n"
-		"Antal: %d\n",
+db_item_t* db_item_copy(db_item_t* item) {
+	return db_item_new(
 		item->name,
 		item->desc,
 		item->price,
-		item->shelf,
-		item->amount);
+		item->shelves);
 }
 
-char* db_item_name(item_t* item) {
+db_item_t* db_item_input() {
+	char* name = ask_question_string("Namn: ");
+	char* desc = ask_question_string("Beskrivning: ");
+	int price = ask_question_int("Pris: ");
+	list_t* shelves = list_new();
+
+	if(ask_question_bool("Vill du lägga till en hyllplats? (J/N)", "J", "N")) {
+		do {
+			db_shelf_t* shelf = db_shelf_input();
+			list_append(shelves, shelf);
+
+			if(!ask_question_bool("Vill du lägga till fler hyllplatser? (J/N)", "J", "N")) {
+				break;
+			}
+		} while(1);
+	}
+
+	db_item_t* item = malloc(sizeof(db_item_t));
+	item->name = name;
+	item->desc = desc;
+	item->price = price;
+	item->shelves = shelves;
+
+	return item;
+}
+
+void db_item_destroy(db_item_t* item) {
+	free(item->name);
+	free(item->desc);
+
+	list_it_t* it = list_it_new(item->shelves);
+	for(;;) {
+		db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+		if(shelf == 0) {
+			break;
+		}
+
+		free((*shelf)->name);
+		free(*shelf);
+	}
+	list_it_destroy(it);
+	list_destroy(item->shelves);
+
+	free(item);
+}
+
+void db_item_print(db_item_t* item) {
+	printf(
+		"Namn: %s\n"
+		"Beskrivning: %s\n"
+		"Pris: %d\n",
+		item->name,
+		item->desc,
+		item->price);
+	list_it_t* it = list_it_new(item->shelves);
+	for(;;) {
+		db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+		if(shelf == 0) {
+			break;
+		}
+
+		printf("Hylla: %s, Antal: %d\n", (*shelf)->name, (*shelf)->amount);
+	}
+	list_it_destroy(it);
+}
+
+char* db_item_name(db_item_t* item) {
 	return item->name;
 }
 
-char* db_item_desc(item_t* item) {
+char* db_item_desc(db_item_t* item) {
 	return item->desc;
 }
 
-int db_item_price(item_t* item) {
+int db_item_price(db_item_t* item) {
 	return item->price;
 }
 
-char* db_item_shelf(item_t* item) {
-	return item->shelf;
+list_t* db_item_shelves(db_item_t* item) {
+	return item->shelves;
 }
 
-int db_item_amount(item_t* item) {
-	return item->amount;
-}
-
-void db_item_set_name(item_t* item, char* name) {
+void db_item_set_name(db_item_t* item, char* name) {
 	free(item->name);
 	item->name = strdup(name);
 }
 
-void db_item_set_shelf(item_t* item, char* shelf) {
-	free(item->shelf);
-	item->shelf = strdup(shelf);
+void db_item_set_desc(db_item_t* item, char* desc) {
+	free(item->desc);
+	item->desc = strdup(desc);
 }
 
-void db_item_copy(item_t* from, item_t* to) {
-	free(to->name);
-	free(to->desc);
-	free(to->shelf);
-	to->name = strdup(from->name);
-	to->desc = strdup(from->desc);
-	to->price = from->price;
-	to->shelf = strdup(from->shelf);
+void db_item_set_price(db_item_t* item, int price) {
+	item->price = price;
 }
 
-void db_print_item(item_t* item) {
-	puts("--- Item ---");
-	printf("Name: %s\n", item->name);
-	printf("Desc: %s\n", item->desc);
-	printf("Price: %d\n", item->price);
-	printf("Shelf: %s\n", item->shelf);
+db_shelf_t* db_shelf_new(char* name, int amount) {
+	db_shelf_t* shelf = malloc(sizeof(db_shelf_t));
+	shelf->name = strdup(name);
+	shelf->amount = amount;
+	return shelf;
+}
+
+db_shelf_t* db_shelf_copy(db_shelf_t* shelf) {
+	return db_shelf_new(shelf->name, shelf->amount);
+}
+
+db_shelf_t* db_shelf_input() {
+	char* shelf_name = ask_question("Hylla: ", db_check_shelf, (convert_func) strdup).s;
+	int amount = ask_question_int("Antal: ");
+	db_shelf_t* shelf = malloc(sizeof(db_shelf_t));
+	shelf->name = shelf_name;
+	shelf->amount = amount;
+	return shelf;
+
+}
+
+void db_shelf_destroy(db_shelf_t* shelf) {
+	free(shelf->name);
+	free(shelf);
+}
+
+char* db_shelf_name(db_shelf_t* shelf) {
+	return shelf->name;
+}
+
+int db_shelf_amount(db_shelf_t* shelf) {
+	return shelf->amount;
 }

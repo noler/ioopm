@@ -1,235 +1,109 @@
 #include "db.h"
 #include "utils.h"
-#include "list.h"
-#include "tree.h"
 
-#include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <mcheck.h>
 
-extern void tree_debug_print(tree_t*, int);
-extern bool tree_debug_rb_validate(tree_t*);
-
-struct undo_item {
+typedef struct {
 	enum {
 		undo_added, undo_edited, undo_removed
 	} type;
 	int index;
-	item_t* item;
-};
+	db_item_t* item;
+} undo_item;
 
 void print_menu();
-char get_menu_selection();
-void store_db(db_t* db);
-db_t* load_db();
+char get_menu_selection(char* choices);
+void edit_item(db_t* db, list_t* undo_stack, int index);
+int select_item_index(db_t* db, char* question);
 
-struct db {
-	list_t* db;
-	tree_t* tree;
-};
-
-int* aint(int a) {
-	int* result = malloc(sizeof(int));
-	*result = a;
-	return result;
-}
-
-int main() {
-	tree_t* tree = tree_new();
-	tree_insert(tree, aint(1), 0, tree_comp_int);
-	tree_insert(tree, aint(2), 0, tree_comp_int);
-	tree_insert(tree, aint(3), 0, tree_comp_int);
-	tree_insert(tree, aint(4), 0, tree_comp_int);
-	tree_insert(tree, aint(5), 0, tree_comp_int);
-
-	for(tree_tr_order order = tree_tr_pre_order; order <= tree_tr_post_order; order++) {
-		tree_tr_t* tr = tree_tr_new(tree, order);
-		/*tree_tr_prev(tr);
-		  tree_tr_prev(tr);*/
-		for(; !tree_tr_after(tr); tree_tr_next(tr)) {
-			printf("%d\n",  *(int*) *tree_tr_current_key(tr));
-		}
-		tree_tr_destroy(tr);
-
-		printf("\n\n");
-	}
-
-	while(tree_size(tree) > 0) {
-		tree_remove(tree, 0, tree_comp_eq);
-	}
-
-	tree_destroy(tree);
-
-	return 0;
-}
-
-int main2(int argc, char* argv[]) {
-	FILE* file;
-
+int main(int argc, char* argv[]) {
 	puts(
 		"Välkommen till lagerhantering 1.0\n"
 		"=================================\n");
 
-	db_t* db;
-
-	file = fopen("store.db", "rb");
-	if(file != NULL) {
-		db = db_read(file);
-		fclose(file);
-	} else {
-		db = db_new();
-	}
-	list_t* undo_history = list_new();
+	db_t* db = db_new();
+	list_t* undo_stack = list_new();
 
 	bool loop = true;
 	while(loop) {
 		print_menu();
-		char c = get_menu_selection();
+		char c = get_menu_selection("LTRGHSA");
 
 		switch(c) {
-			case 'L': {
-				item_t* item = db_item_input();
+			case 'L':
+			{
+				db_item_t* new_item = db_item_input();
 
-				item_t* existing_item;
-				while((existing_item = db_find_item_shelf(db, db_item_shelf(item))) != 0) {
-					printf("Varan \"%s\" finns redan på samma hyllplats, välj en ny plats: \n", db_item_name(existing_item));
-					do {
-						char* response = ask_question_string(0);
-						if(!db_check_shelf(response)) {
-							free(response);
-							puts("Ange en giltig hyllplats (bokstav följt av siffror): ");
-							continue;
-						}
-						db_item_set_shelf(item, response);
-						free(response);
+				bool shelf_exists = false;
+				list_it_t* it = list_it_new(db_item_shelves(new_item));
+				for(;;) {
+					db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+					if(shelf == 0) {
 						break;
-					} while(1);
+					}
+
+					db_item_t* shelf_item = db_find_item_shelf(db, db_shelf_name(*shelf));
+					if(shelf_item != 0) {
+						printf("Varan \"%s\" finns redan på hyllan %s.\n", db_item_name(shelf_item), db_shelf_name(*shelf));
+						shelf_exists = true;
+						break;
+					}
 				}
+				list_it_destroy(it);
 
-				while(db_find_item_name(db, db_item_name(item)) != 0) {
-					char* response = ask_question_string("Det finns redan en vara med samma namn, välj ett nytt namn: ");
-					db_item_set_name(item, response);
-					free(response);
+				if(ask_question_bool(
+					   shelf_exists ?
+					   "Vill du skriva över varan på denna/dessa hyllor? (J/N)" :
+					   "Är du säker på att du vill lägga till varan? (J/N)", "J", "N")) {
+					undo_item* undo = malloc(sizeof(undo_item));
+					undo->type = undo_added;
+					undo->index = db_num_items(db);
+					list_append(undo_stack, undo);
+
+					db_add_item(db, new_item);
 				}
-
-				struct undo_item* undo = malloc(sizeof(struct undo_item));
-				undo->type = undo_added;
-				undo->index = db_num_items(db);
-				undo->item = 0;
-				list_append(undo_history, undo);
-
-				db_add_item(db, item);
-				printf("%s har lagts till\n\n", db_item_name(item));
 			}
 			break;
 
 			case 'T':
 			{
-				int index, limit = db_num_items(db);
-				if(limit == 0) {
-					puts("Varukatalogen är tom. \n");
-					break;
-				} else if(limit == 1) {
-					index = 0;
-				} else {
-					db_list(db);
-					do {
-						printf("Vilken vara ska tas bort (1-%d)\n", limit);
-						index = ask_question_int(0);
-					} while(!(0 < index && index <= limit));
-					index--;
+				int selection = select_item_index(db, "Vilken vara ska tas bort?");
+				if(selection == -1) {
+					continue;
 				}
 
-				item_t* item = db_get_item(db, index);
+				db_item_t* old_item = db_remove_item(db, selection);
 
-				bool confirm;
-				while(1) {
-					printf("Är du säker på att du vill ta bort \"%s\"? (j/N)\n", db_item_name(item));
-					char* response = ask_question_string(0);
-					if((response[0] == 'J' || response[0] == 'j') && response[1] == 0) {
-						confirm = true;
-						free(response);
-						break;
-					} else if((response[0] == 'N' || response[0] == 'n') && response[1] == 0) {
-						confirm = false;
-						free(response);
-						break;
-					}
-					free(response);
-				}
-
-				if(!confirm) {
-					puts("");
-					break;
-				}
-
-				struct undo_item* undo = malloc(sizeof(struct undo_item));
+				undo_item* undo = malloc(sizeof(undo_item));
 				undo->type = undo_removed;
-				undo->index = index;
-				undo->item = db_remove_item(db, index);
-				list_append(undo_history, undo);
-
-				printf("\"%s\" har tagits bort. \n\n", db_item_name(undo->item));
+				undo->index = selection;
+				undo->item = old_item;
+				list_append(undo_stack, undo);
 			}
 			break;
 
 			case 'R':
 			{
-				int index, limit = db_num_items(db);
-				if(limit == 0) {
-					puts("Varukatalogen är tom. \n");
-					break;
-				} else {
-					db_list(db);
-					do {
-						printf("Vilken vara ska ändras? (1-%d)\n", db_num_items(db));
-						index = ask_question_int(0);
-					} while(!(0 < index && index <= limit));
-					index--;
-				}
-				item_t* new_item = db_item_input();
+				int selection = select_item_index(db, "Vilken vara ska ändras?");
 
-				item_t* old_item = db_get_item(db, index);
-
-				bool confirm;
-				while(1) {
-					printf("Är du säker på att du vill ersätta \"%s\" med \"%s\"? (j/N)\n", db_item_name(new_item), db_item_name(old_item));
-					char* response = ask_question_string(0);
-					if((response[0] == 'J' || response[0] == 'j') && response[1] == 0) {
-						confirm = true;
-						free(response);
-						break;
-					} else if((response[0] == 'N' || response[0] == 'n') && response[1] == 0) {
-						confirm = false;
-						free(response);
-						break;
-					}
-					free(response);
+				if(selection == -1) {
+					continue;
 				}
 
-				if(!confirm) {
-					puts("");
-					break;
-				}
-
-				struct undo_item* undo = malloc(sizeof(struct undo_item));
-				undo->type = undo_edited;
-				undo->index = index;
-				undo->item = db_replace_item(db, new_item, index);
-				list_append(undo_history, undo);
-
-				printf("\"%s\" har ersatts med \"%s\"\n\n", db_item_name(old_item), db_item_name(new_item));
+				puts("");
+				edit_item(db, undo_stack, selection);
 			}
 			break;
 
 			case 'G':
 			{
-				if(list_length(undo_history) == 0) {
+				if(list_length(undo_stack) == 0) {
 					puts("Ångra-historiken är tom. ");
 				} else {
-					struct undo_item* undo;
-					list_remove(undo_history, list_length(undo_history) - 1, (void**) &undo);
+					undo_item* undo;
+					list_remove(undo_stack, list_length(undo_stack) - 1, (void**) &undo);
 
 					switch(undo->type) {
 						case undo_added:
@@ -253,36 +127,23 @@ int main2(int argc, char* argv[]) {
 
 					free(undo);
 				}
-
-				puts("");
 			}
 			break;
 
-			case 'H': {
-				if(db_num_items(db) == 0) {
-					puts("Varukatalogen är tom. \n");
-				} else {
-					db_list(db);
-				}
-			}
-			break;
+			case 'H':
+				db_list(db);
+				break;
 
 			case 'S':
 			{
-				if(db_num_items(db) == 0) {
-					puts("Varukatalogen är tom. \n");
-					break;
+				int selection = select_item_index(db, "Vilken vara ska skrivas ut?");
+
+				if(selection == -1) {
+					continue;
 				}
-				db_list(db);
-				int index, limit = db_num_items(db);
-				do {
-					printf("Vilken vara ska skrivas ut? (1-%d)\n", db_num_items(db));
-					index = ask_question_int(0);
-				} while(!(0 < index && index <= limit));
-				index--;
 
 				puts("");
-				db_item_print(db_get_item(db, index));
+				db_item_print(db_get_item(db, selection));
 				puts("");
 			}
 			break;
@@ -290,84 +151,183 @@ int main2(int argc, char* argv[]) {
 			case 'A':
 				loop = false;
 				break;
-
-			case 'D':
-			{
-				tree_debug_print(db->tree, 1);
-				for(int i = 0; i < list_length(undo_history); i++) {
-					struct undo_item* undo = (struct undo_item*) *list_get(undo_history, i);
-					if(undo->item != 0) {
-						printf("undo %s\n", db_item_name(undo->item));
-					}
-				}
-			}
-			break;
 		}
 	}
 
-	file = fopen("store.db", "wb");
-	db_write(file, db);
-	fclose(file);
-
-	list_it_t* it;
-	for(it = list_it_new(undo_history);; list_it_next(it)) {
-		struct undo_item** undo = (struct undo_item**) list_it_current(it);
+	list_it_t* it = list_it_new(undo_stack);
+	for(;;) {
+		undo_item** undo = (undo_item**) list_it_next(it);
 
 		if(undo == 0) {
 			break;
 		}
 
-		if((*undo)->type == undo_removed || (*undo)->type == undo_edited) {
+		if((*undo)->type == undo_removed ||
+		   (*undo)->type == undo_edited) {
 			db_item_destroy((*undo)->item);
 		}
 
 		free(*undo);
 	}
 	list_it_destroy(it);
-	list_destroy(undo_history);
+	list_destroy(undo_stack);
 
 	while(db_num_items(db) > 0) {
 		db_item_destroy(db_remove_item(db, 0));
 	}
 
 	db_destroy(db);
+}
+
+void print_menu() {
+	puts("[L]ägga till en vara\n"
+		 "[T]a bort en vara\n"
+		 "[R]edigera en vara\n"
+		 "Ån[g]ra senaste ändringen\n"
+		 "List [h]ela varukatalogen\n"
+		 "[S]kriv ut information om en vara\n"
+		 "[A]vsluta\n");
+}
+
+char get_menu_selection(char* choices) {
+	char buffer[1024];
+	read_string(buffer, 1024);
+
+	if(buffer[0] != 0 && buffer[1] == 0) {
+		buffer[0] = toupper(buffer[0]);
+		for(char* choice = choices; *choice != 0; choice++) {
+			if(toupper(*choice) == buffer[0]) {
+				return buffer[0];
+			}
+		}
+	}
 
 	return 0;
 }
 
-void print_menu() {
-	puts(
-		"[L]ägga till en vara\n"
-		"[T]a bort en vara\n"
-		"[R]edigera en vara\n"
-		"Ån[g]ra senaste ändringen\n"
-		"List [h]ela varukatalogen\n"
-		"[S]kriv ut information om en vara\n"
-		"[A]vsluta\n");
+void edit_item(db_t* db, list_t* undo_stack, int index) {
+	db_item_t* old_item = db_get_item(db, index);
+	db_item_print(old_item);
+	puts("");
+	db_item_t* new_item = db_item_copy(old_item);
+
+	bool edit = true;
+	while(edit) {
+		puts("[N]amn | [B]eskrivning | [P]ris | [H]yllor | [S]lutför ändringarna | [A]vbryt");
+		char c = get_menu_selection("NBPHSA");
+
+		switch(c) {
+			case 'N':
+			{
+				char* new_name = ask_question_string("Namn: ");
+				db_item_set_name(new_item, new_name);
+				free(new_name);
+				puts("");
+			}
+			break;
+
+			case 'B':
+			{
+				char* new_desc = ask_question_string("Beskrivning: ");
+				db_item_set_desc(new_item, new_desc);
+				free(new_desc);
+				puts("");
+			}
+			break;
+
+			case 'P':
+			{
+				int new_price = ask_question_int("Pris: ");
+				db_item_set_price(new_item, new_price);
+				puts("");
+			}
+			break;
+
+			case 'H':
+			{
+				list_t* shelves = db_item_shelves(new_item);
+				int num_shelves = list_length(shelves);
+				if(num_shelves == 0) {
+					puts("Varan finns inte på någon hylla. ");
+
+					if(ask_question_bool("Vill du lägga till en hyllplats? (J/N)", "J", "N")) {
+						db_shelf_t* shelf = db_shelf_input();
+					}
+				} else {
+					puts(num_shelves == 1 ? "Varan finns på hyllan: " : "Varan finns på hyllorna: ");
+					list_it_t* it = list_it_new(shelves);
+					for(int i = 1;; i++) {
+						db_shelf_t** shelf = (db_shelf_t**) list_it_next(it);
+
+						if(shelf == 0) {
+							break;
+						}
+
+						printf("%d. Hylla: %s, Antal: %d\n", i, db_shelf_name(*shelf), db_shelf_amount(*shelf));
+					}
+					list_it_destroy(it);
+
+					char c = 0;
+					while(c == 0) {
+						puts("[L]ägg till | [T]a bort | Ändra [A]ntal | A[v]bryt");
+						c = get_menu_selection("LTA");
+					}
+				}
+			}
+			break;
+
+			case 'S':
+			{
+				if(ask_question_bool("Är du säker på att du vill skriva ändringarna till databasen? (J/N)", "J", "N")) {
+					db_replace_item(db, new_item, index);
+
+					undo_item* undo = malloc(sizeof(undo_item));
+					undo->type = undo_edited;
+					undo->index = index;
+					undo->item = old_item;
+					list_append(undo_stack, undo);
+				} else {
+					
+				}
+
+				return;
+			}
+
+			case 'A':
+				edit = false;
+				break;
+		}
+	}
+
+	db_item_destroy(new_item);
 }
 
-char get_menu_selection() {
-	char c;
-	do {
-		fputs("Vad vill du göra? ", stdout);
-		fflush(stdout);
-		c = toupper(getchar());
-		if(c == EOF) {
-			return EOF;
-		}
-		char c2 = getchar();
-		if(c2 != '\n' && c2 != EOF) {
-			c = 0;
-		}
-	} while(
-		c != 'L' &&
-		c != 'T' &&
-		c != 'R' &&
-		c != 'G' &&
-		c != 'H' &&
-		c != 'S' &&
-		c != 'A' &&
-		c != 'D');
+int index_limit;
+bool is_index(char* str) {
+	if(is_number(str)) {
+		int number = atoi(str);
+		return 1 <= number && number <= index_limit;
+	} else if((str[0] == 'a' || str[0] == 'A') && str[1] == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
-	return c;
+answer_t make_answer_index(char* str) {
+	if((str[0] == 'a' || str[0] == 'A') && str[1] == 0) {
+		return (answer_t) 0;
+	} else {
+		return (answer_t) atoi(str);
+	}
+}
+
+int select_item_index(db_t* db, char* question) {
+	// TODO limit to 20 items
+
+	db_list(db);
+
+	index_limit = db_num_items(db);
+	int selection = ask_question(question, is_index, make_answer_index).i;
+	return selection - 1;
 }

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef union {
+	bool b;
 	int i;
 	float f;
 	char* s;
@@ -24,5 +25,6 @@ answer_t ask_question(char* question, check_func check, convert_func convert);
 int ask_question_int(char* question);
 char* ask_question_string(char* question);
 float ask_question_float(char* question);
+bool ask_question_bool(char* question, char* true_response, char* false_response);
 
 #endif /* __UTILS_H__ */
