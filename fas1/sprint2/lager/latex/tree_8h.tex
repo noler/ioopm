@@ -1,0 +1,581 @@
+\hypertarget{tree_8h}{}\section{source/tree.h File Reference}
+\label{tree_8h}\index{source/tree.\+h@{source/tree.\+h}}
+{\ttfamily \#include $<$stdbool.\+h$>$}\\*
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structtree}{tree} \hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t}
+\begin{DoxyCompactList}\small\item\em Represents a tree containing key-\/value pairs. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structtree__tr}{tree\+\_\+tr} \hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t}
+\begin{DoxyCompactList}\small\item\em Respresents a traverser for a tree. \end{DoxyCompactList}\item 
+typedef int($\ast$ \hyperlink{tree_8h_a309be199660247719557442d65daaed2}{comp\+\_\+func}) (void $\ast$a, void $\ast$b)
+\begin{DoxyCompactList}\small\item\em A comparison function. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum {\bfseries tree\+\_\+tr\+\_\+order} \{ {\bfseries tree\+\_\+tr\+\_\+pre\+\_\+order}, 
+{\bfseries tree\+\_\+tr\+\_\+in\+\_\+order}, 
+{\bfseries tree\+\_\+tr\+\_\+post\+\_\+order}, 
+{\bfseries tree\+\_\+tr\+\_\+level\+\_\+order}
+ \}\hypertarget{tree_8h_a1ad3b8f8e48ec5d6b66eb03154b012fe}{}\label{tree_8h_a1ad3b8f8e48ec5d6b66eb03154b012fe}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$ \hyperlink{tree_8h_a214fc1cee2bc78de42228f88ed27b1a1}{tree\+\_\+new} ()
+\begin{DoxyCompactList}\small\item\em Creates a new empty tree. \end{DoxyCompactList}\item 
+void \hyperlink{tree_8h_a8005bed8a0fa0877eda56c8232701fd4}{tree\+\_\+destroy} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree})
+\begin{DoxyCompactList}\small\item\em Destroys the given tree and frees any memory allocated for the tree. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_a13827cc121c0826bccee80991ac7dd04}{tree\+\_\+size} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree})
+\begin{DoxyCompactList}\small\item\em Gives the number of nodes in the given tree. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_ac892293edb990109e99f00807f1a9fcd}{tree\+\_\+depth} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree})
+\begin{DoxyCompactList}\small\item\em Gives the longest path from the root node to any other node. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{tree_8h_a4a05afc68e4b72bca03f2b698160dc60}{tree\+\_\+insert} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree}, void $\ast$key, void $\ast$value, \hyperlink{tree_8h_a309be199660247719557442d65daaed2}{comp\+\_\+func} comp)
+\begin{DoxyCompactList}\small\item\em Insert a key-\/value pair as a new node in the given tree. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{tree_8h_a990490f68b210ee44e05f18aa1692f1d}{tree\+\_\+remove} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree}, void $\ast$$\ast$key, \hyperlink{tree_8h_a309be199660247719557442d65daaed2}{comp\+\_\+func} comp)
+\begin{DoxyCompactList}\small\item\em Removes the node from the tree with the given key. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{tree_8h_a5c8058f7580e73aa67a6a5a9df6d0173}{tree\+\_\+search} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree}, void $\ast$key, \hyperlink{tree_8h_a309be199660247719557442d65daaed2}{comp\+\_\+func} comp)
+\begin{DoxyCompactList}\small\item\em Search for a value in the tree. \end{DoxyCompactList}\item 
+\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$ \hyperlink{tree_8h_a0fd143d57ea509a3ce586cefc4eb0477}{tree\+\_\+tr\+\_\+new} (\hyperlink{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{tree\+\_\+t} $\ast$\hyperlink{structtree}{tree}, tree\+\_\+tr\+\_\+order order)
+\begin{DoxyCompactList}\small\item\em Create a new tree traverser. \end{DoxyCompactList}\item 
+void \hyperlink{tree_8h_a1e94cdc222e874bcd08e6ec88d1788ae}{tree\+\_\+tr\+\_\+destroy} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Destroy a tree traverser and free any memory allocated for it. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{tree_8h_ac45815096e09e9e7c14c0c96710a62f6}{tree\+\_\+tr\+\_\+next} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Move the traverser to the next node in the tree. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{tree_8h_a3d60c6a50bb5572e08fbaaba9133a961}{tree\+\_\+tr\+\_\+prev} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Move the traverser to the previous node in the tree. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{tree_8h_a5315b5c17c5fb3e888118e65c2405d96}{tree\+\_\+tr\+\_\+current\+\_\+key} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Gives the key of the node the traverser is curently positioned on. \end{DoxyCompactList}\item 
+void $\ast$$\ast$ \hyperlink{tree_8h_aa2f69c16c77f60f7850de6a7f3bb780d}{tree\+\_\+tr\+\_\+current\+\_\+value} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Gives the value of the node the traverser is curently positioned on. \end{DoxyCompactList}\item 
+bool \hyperlink{tree_8h_abed9a0cb2e9776a1136b6b42bd60d8e2}{tree\+\_\+tr\+\_\+first} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Determines if the traverser is currently positioned on the first node in the tree. \end{DoxyCompactList}\item 
+bool \hyperlink{tree_8h_a242481e89b5b1b4db25b605b5f2c3375}{tree\+\_\+tr\+\_\+last} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Determines if the traverser is currently positioned on the last node in the tree. \end{DoxyCompactList}\item 
+bool \hyperlink{tree_8h_ae309461fdb33b7a7eb40792da4686b14}{tree\+\_\+tr\+\_\+after} (\hyperlink{tree_8h_acd41154177e60a52d749057bda00119b}{tree\+\_\+tr\+\_\+t} $\ast$tr)
+\begin{DoxyCompactList}\small\item\em Determines if the traverser has moved past every node in the tree. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_a140847a3e2cefc8d9639439013d890d1}{tree\+\_\+comp\+\_\+int} (void $\ast$a, void $\ast$b)
+\begin{DoxyCompactList}\small\item\em Compares two ints. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_ab1eaecb529384ff233edb3256dc27b3f}{tree\+\_\+comp\+\_\+str} (void $\ast$a, void $\ast$b)
+\begin{DoxyCompactList}\small\item\em Compares two null terminated strings. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_aea0c5ac24ff15b5aecf50896d719369f}{tree\+\_\+comp\+\_\+strp} (void $\ast$a, void $\ast$b)
+\begin{DoxyCompactList}\small\item\em Compares two pointers to null terminated strings. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_a793799bf91f965a57e14f3cdb245c6b0}{tree\+\_\+comp\+\_\+eq} (void $\ast$a, void $\ast$b)
+\begin{DoxyCompactList}\small\item\em A comparison function where every value is equl to any other value. \end{DoxyCompactList}\item 
+int \hyperlink{tree_8h_ad9fdb3c14c5692d73ec6e75918cd6da8}{tree\+\_\+comp\+\_\+lt} (void $\ast$a, void $\ast$b)
+\begin{DoxyCompactList}\small\item\em A comparison function where a is always less than b. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Andreas Olofsson 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+
+
+\subsection{Typedef Documentation}
+\index{tree.\+h@{tree.\+h}!comp\+\_\+func@{comp\+\_\+func}}
+\index{comp\+\_\+func@{comp\+\_\+func}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{comp\+\_\+func}{comp\_func}}]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ comp\+\_\+func) (void $\ast$a, void $\ast$b)}\hypertarget{tree_8h_a309be199660247719557442d65daaed2}{}\label{tree_8h_a309be199660247719557442d65daaed2}
+
+
+A comparison function. 
+
+Compares two value and returns a negative value if a is less than b, zero if a and b are equal and a positive value if a is greater than b. \index{tree.\+h@{tree.\+h}!tree\+\_\+t@{tree\+\_\+t}}
+\index{tree\+\_\+t@{tree\+\_\+t}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+t}{tree\_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf tree} {\bf tree\+\_\+t}}\hypertarget{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}{}\label{tree_8h_aabd08cfd7893b1b0d401ce689de8c1b7}
+
+
+Represents a tree containing key-\/value pairs. 
+
+The tree contains key-\/value pairs where keys must be comparable and unique. \index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+t@{tree\+\_\+tr\+\_\+t}}
+\index{tree\+\_\+tr\+\_\+t@{tree\+\_\+tr\+\_\+t}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+t}{tree\_tr\_t}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf tree\+\_\+tr} {\bf tree\+\_\+tr\+\_\+t}}\hypertarget{tree_8h_acd41154177e60a52d749057bda00119b}{}\label{tree_8h_acd41154177e60a52d749057bda00119b}
+
+
+Respresents a traverser for a tree. 
+
+The traverser can be pre-\/, post-\/, in-\/ or level-\/order. The traverser points to one of the nodes in the tree or is \textquotesingle{}before\textquotesingle{}/\textquotesingle{}after\textquotesingle{} all nodes in the tree. 
+
+\subsection{Function Documentation}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+comp\+\_\+eq@{tree\+\_\+comp\+\_\+eq}}
+\index{tree\+\_\+comp\+\_\+eq@{tree\+\_\+comp\+\_\+eq}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+comp\+\_\+eq(void $\ast$a, void $\ast$b)}{tree\_comp\_eq(void *a, void *b)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+comp\+\_\+eq (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{a, }
+\item[{void $\ast$}]{b}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a793799bf91f965a57e14f3cdb245c6b0}{}\label{tree_8h_a793799bf91f965a57e14f3cdb245c6b0}
+
+
+A comparison function where every value is equl to any other value. 
+
+Useful for targeting the root node in a tree.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first value. \\
+\hline
+{\em b} & The second value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+comp\+\_\+int@{tree\+\_\+comp\+\_\+int}}
+\index{tree\+\_\+comp\+\_\+int@{tree\+\_\+comp\+\_\+int}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+comp\+\_\+int(void $\ast$a, void $\ast$b)}{tree\_comp\_int(void *a, void *b)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+comp\+\_\+int (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{a, }
+\item[{void $\ast$}]{b}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a140847a3e2cefc8d9639439013d890d1}{}\label{tree_8h_a140847a3e2cefc8d9639439013d890d1}
+
+
+Compares two ints. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first int. \\
+\hline
+{\em b} & The second int. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+b -\/ a 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+comp\+\_\+lt@{tree\+\_\+comp\+\_\+lt}}
+\index{tree\+\_\+comp\+\_\+lt@{tree\+\_\+comp\+\_\+lt}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+comp\+\_\+lt(void $\ast$a, void $\ast$b)}{tree\_comp\_lt(void *a, void *b)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+comp\+\_\+lt (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{a, }
+\item[{void $\ast$}]{b}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_ad9fdb3c14c5692d73ec6e75918cd6da8}{}\label{tree_8h_ad9fdb3c14c5692d73ec6e75918cd6da8}
+
+
+A comparison function where a is always less than b. 
+
+A comparison function where a is always greater than b.
+
+Useful for targeting the lowest node in a tree.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first value. \\
+\hline
+{\em b} & The second value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/1
+\end{DoxyReturn}
+Useful for targeting the highest node in a tree.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first value. \\
+\hline
+{\em b} & The second value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1
+\end{DoxyReturn}
+A comparison function where a is always less than b.
+
+Useful for targeting the highest node in a tree.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first value. \\
+\hline
+{\em b} & The second value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+comp\+\_\+str@{tree\+\_\+comp\+\_\+str}}
+\index{tree\+\_\+comp\+\_\+str@{tree\+\_\+comp\+\_\+str}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+comp\+\_\+str(void $\ast$a, void $\ast$b)}{tree\_comp\_str(void *a, void *b)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+comp\+\_\+str (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{a, }
+\item[{void $\ast$}]{b}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_ab1eaecb529384ff233edb3256dc27b3f}{}\label{tree_8h_ab1eaecb529384ff233edb3256dc27b3f}
+
+
+Compares two null terminated strings. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first string. \\
+\hline
+{\em b} & The second string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+strcmp((char$\ast$) a, (char$\ast$) b) 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+comp\+\_\+strp@{tree\+\_\+comp\+\_\+strp}}
+\index{tree\+\_\+comp\+\_\+strp@{tree\+\_\+comp\+\_\+strp}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+comp\+\_\+strp(void $\ast$a, void $\ast$b)}{tree\_comp\_strp(void *a, void *b)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+comp\+\_\+strp (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{a, }
+\item[{void $\ast$}]{b}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_aea0c5ac24ff15b5aecf50896d719369f}{}\label{tree_8h_aea0c5ac24ff15b5aecf50896d719369f}
+
+
+Compares two pointers to null terminated strings. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The first string-\/pointer. \\
+\hline
+{\em b} & The second string-\/pointer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+strcmp($\ast$(char$\ast$$\ast$) a, $\ast$(char$\ast$$\ast$) b) 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+depth@{tree\+\_\+depth}}
+\index{tree\+\_\+depth@{tree\+\_\+depth}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+depth(tree\+\_\+t $\ast$tree)}{tree\_depth(tree\_t *tree)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+depth (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_ac892293edb990109e99f00807f1a9fcd}{}\label{tree_8h_ac892293edb990109e99f00807f1a9fcd}
+
+
+Gives the longest path from the root node to any other node. 
+
+Completes in $ O(n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to measure the depth of. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The depth of the tree. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+destroy@{tree\+\_\+destroy}}
+\index{tree\+\_\+destroy@{tree\+\_\+destroy}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+destroy(tree\+\_\+t $\ast$tree)}{tree\_destroy(tree\_t *tree)}}]{\setlength{\rightskip}{0pt plus 5cm}void tree\+\_\+destroy (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a8005bed8a0fa0877eda56c8232701fd4}{}\label{tree_8h_a8005bed8a0fa0877eda56c8232701fd4}
+
+
+Destroys the given tree and frees any memory allocated for the tree. 
+
+Any use of the tree after tree\+\_\+destroy is called is not valid.
+
+Completes in $ O(n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to destroy. \\
+\hline
+\end{DoxyParams}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+insert@{tree\+\_\+insert}}
+\index{tree\+\_\+insert@{tree\+\_\+insert}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+insert(tree\+\_\+t $\ast$tree, void $\ast$key, void $\ast$value, comp\+\_\+func comp)}{tree\_insert(tree\_t *tree, void *key, void *value, comp\_func comp)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ tree\+\_\+insert (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree, }
+\item[{void $\ast$}]{key, }
+\item[{void $\ast$}]{value, }
+\item[{{\bf comp\+\_\+func}}]{comp}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a4a05afc68e4b72bca03f2b698160dc60}{}\label{tree_8h_a4a05afc68e4b72bca03f2b698160dc60}
+
+
+Insert a key-\/value pair as a new node in the given tree. 
+
+If the key equals any other key in the tree that keys associated value is replace by the given value.
+
+Completes in $ O(log n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to insert into. \\
+\hline
+{\em key} & The key of the node to insert. \\
+\hline
+{\em value} & The value of the node to insert. \\
+\hline
+{\em comp} & A function to compare the given key to any other key in the tree. \\
+\hline
+\end{DoxyParams}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+new@{tree\+\_\+new}}
+\index{tree\+\_\+new@{tree\+\_\+new}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+new()}{tree\_new()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf tree\+\_\+t}$\ast$ tree\+\_\+new (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a214fc1cee2bc78de42228f88ed27b1a1}{}\label{tree_8h_a214fc1cee2bc78de42228f88ed27b1a1}
+
+
+Creates a new empty tree. 
+
+\begin{DoxyReturn}{Returns}
+The new tree. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+remove@{tree\+\_\+remove}}
+\index{tree\+\_\+remove@{tree\+\_\+remove}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+remove(tree\+\_\+t $\ast$tree, void $\ast$$\ast$key, comp\+\_\+func comp)}{tree\_remove(tree\_t *tree, void **key, comp\_func comp)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ tree\+\_\+remove (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree, }
+\item[{void $\ast$$\ast$}]{key, }
+\item[{{\bf comp\+\_\+func}}]{comp}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a990490f68b210ee44e05f18aa1692f1d}{}\label{tree_8h_a990490f68b210ee44e05f18aa1692f1d}
+
+
+Removes the node from the tree with the given key. 
+
+If the key doesn\textquotesingle{}t exist in the tree then no change is made to the tree.
+
+Completes in $ O(log n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to remove from. \\
+\hline
+{\em key} & The key of the node to remove. \\
+\hline
+{\em comp} & A function to compare the given key to any other key in the tree. \\
+\hline
+\end{DoxyParams}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+search@{tree\+\_\+search}}
+\index{tree\+\_\+search@{tree\+\_\+search}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+search(tree\+\_\+t $\ast$tree, void $\ast$key, comp\+\_\+func comp)}{tree\_search(tree\_t *tree, void *key, comp\_func comp)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ tree\+\_\+search (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree, }
+\item[{void $\ast$}]{key, }
+\item[{{\bf comp\+\_\+func}}]{comp}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a5c8058f7580e73aa67a6a5a9df6d0173}{}\label{tree_8h_a5c8058f7580e73aa67a6a5a9df6d0173}
+
+
+Search for a value in the tree. 
+
+Completes in $ O(log n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to search in. \\
+\hline
+{\em key} & The key of the node to find the value of. \\
+\hline
+{\em comp} & A function to compare the given key to any other key in the tree. \\
+\hline
+\end{DoxyParams}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+size@{tree\+\_\+size}}
+\index{tree\+\_\+size@{tree\+\_\+size}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+size(tree\+\_\+t $\ast$tree)}{tree\_size(tree\_t *tree)}}]{\setlength{\rightskip}{0pt plus 5cm}int tree\+\_\+size (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a13827cc121c0826bccee80991ac7dd04}{}\label{tree_8h_a13827cc121c0826bccee80991ac7dd04}
+
+
+Gives the number of nodes in the given tree. 
+
+Completes in $ O(n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to count the nodes in. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The number of nodes in the tree. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+after@{tree\+\_\+tr\+\_\+after}}
+\index{tree\+\_\+tr\+\_\+after@{tree\+\_\+tr\+\_\+after}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+after(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_after(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}bool tree\+\_\+tr\+\_\+after (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_ae309461fdb33b7a7eb40792da4686b14}{}\label{tree_8h_ae309461fdb33b7a7eb40792da4686b14}
+
+
+Determines if the traverser has moved past every node in the tree. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If the traverser is in the \textquotesingle{}after\textquotesingle{} state (has moved past every node in the tree). 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+current\+\_\+key@{tree\+\_\+tr\+\_\+current\+\_\+key}}
+\index{tree\+\_\+tr\+\_\+current\+\_\+key@{tree\+\_\+tr\+\_\+current\+\_\+key}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+current\+\_\+key(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_current\_key(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ tree\+\_\+tr\+\_\+current\+\_\+key (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a5315b5c17c5fb3e888118e65c2405d96}{}\label{tree_8h_a5315b5c17c5fb3e888118e65c2405d96}
+
+
+Gives the key of the node the traverser is curently positioned on. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to provide the key. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The key of the node the traverser is currently on. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+current\+\_\+value@{tree\+\_\+tr\+\_\+current\+\_\+value}}
+\index{tree\+\_\+tr\+\_\+current\+\_\+value@{tree\+\_\+tr\+\_\+current\+\_\+value}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+current\+\_\+value(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_current\_value(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ tree\+\_\+tr\+\_\+current\+\_\+value (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_aa2f69c16c77f60f7850de6a7f3bb780d}{}\label{tree_8h_aa2f69c16c77f60f7850de6a7f3bb780d}
+
+
+Gives the value of the node the traverser is curently positioned on. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to provide the value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the node the traverser is currently on. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+destroy@{tree\+\_\+tr\+\_\+destroy}}
+\index{tree\+\_\+tr\+\_\+destroy@{tree\+\_\+tr\+\_\+destroy}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+destroy(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_destroy(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}void tree\+\_\+tr\+\_\+destroy (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a1e94cdc222e874bcd08e6ec88d1788ae}{}\label{tree_8h_a1e94cdc222e874bcd08e6ec88d1788ae}
+
+
+Destroy a tree traverser and free any memory allocated for it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to destroy. \\
+\hline
+\end{DoxyParams}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+first@{tree\+\_\+tr\+\_\+first}}
+\index{tree\+\_\+tr\+\_\+first@{tree\+\_\+tr\+\_\+first}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+first(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_first(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}bool tree\+\_\+tr\+\_\+first (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_abed9a0cb2e9776a1136b6b42bd60d8e2}{}\label{tree_8h_abed9a0cb2e9776a1136b6b42bd60d8e2}
+
+
+Determines if the traverser is currently positioned on the first node in the tree. 
+
+For pre-\/ and level-\/order it competes in $ (1) $ timer. For in-\/ and post-\/order it completes in $ O(log n) $ time the first time it\textquotesingle{}s called and in $ O(1) $ time any subsequent call.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If the traverser is on the first node in the tree. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+last@{tree\+\_\+tr\+\_\+last}}
+\index{tree\+\_\+tr\+\_\+last@{tree\+\_\+tr\+\_\+last}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+last(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_last(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}bool tree\+\_\+tr\+\_\+last (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a242481e89b5b1b4db25b605b5f2c3375}{}\label{tree_8h_a242481e89b5b1b4db25b605b5f2c3375}
+
+
+Determines if the traverser is currently positioned on the last node in the tree. 
+
+For post-\/ it completes in $ O(1) $ time. For pre-\/, in-\/ or level-\/order it completes in $ O(log n) $ time the first time it\textquotesingle{}s called and in $ O(1) $ time any subsequent call.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If the traverser is on the last node in the tree. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+new@{tree\+\_\+tr\+\_\+new}}
+\index{tree\+\_\+tr\+\_\+new@{tree\+\_\+tr\+\_\+new}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+new(tree\+\_\+t $\ast$tree, tree\+\_\+tr\+\_\+order order)}{tree\_tr\_new(tree\_t *tree, tree\_tr\_order order)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf tree\+\_\+tr\+\_\+t}$\ast$ tree\+\_\+tr\+\_\+new (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+t} $\ast$}]{tree, }
+\item[{tree\+\_\+tr\+\_\+order}]{order}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a0fd143d57ea509a3ce586cefc4eb0477}{}\label{tree_8h_a0fd143d57ea509a3ce586cefc4eb0477}
+
+
+Create a new tree traverser. 
+
+After calling tree\+\_\+tr\+\_\+new, the tree may not be modified before calling tree\+\_\+tr\+\_\+destroy on the traverser.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tree} & The tree to create a traverser for. \\
+\hline
+{\em order} & The order in which the traverser will traverse the tree. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The new traverser. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+next@{tree\+\_\+tr\+\_\+next}}
+\index{tree\+\_\+tr\+\_\+next@{tree\+\_\+tr\+\_\+next}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+next(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_next(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ tree\+\_\+tr\+\_\+next (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_ac45815096e09e9e7c14c0c96710a62f6}{}\label{tree_8h_ac45815096e09e9e7c14c0c96710a62f6}
+
+
+Move the traverser to the next node in the tree. 
+
+Completes in $ O(log n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to move. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the node the traverser was on before the function call. 
+\end{DoxyReturn}
+\index{tree.\+h@{tree.\+h}!tree\+\_\+tr\+\_\+prev@{tree\+\_\+tr\+\_\+prev}}
+\index{tree\+\_\+tr\+\_\+prev@{tree\+\_\+tr\+\_\+prev}!tree.\+h@{tree.\+h}}
+\subsubsection[{\texorpdfstring{tree\+\_\+tr\+\_\+prev(tree\+\_\+tr\+\_\+t $\ast$tr)}{tree\_tr\_prev(tree\_tr\_t *tr)}}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$$\ast$ tree\+\_\+tr\+\_\+prev (
+\begin{DoxyParamCaption}
+\item[{{\bf tree\+\_\+tr\+\_\+t} $\ast$}]{tr}
+\end{DoxyParamCaption}
+)}\hypertarget{tree_8h_a3d60c6a50bb5572e08fbaaba9133a961}{}\label{tree_8h_a3d60c6a50bb5572e08fbaaba9133a961}
+
+
+Move the traverser to the previous node in the tree. 
+
+Completes in $ O(log n) $ time.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tr} & The traverser to move. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the node the traverser was on before the function call. 
+\end{DoxyReturn}
